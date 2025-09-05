@@ -162,3 +162,150 @@ class CVAnalyser:
 
         # Return the sections
         return sections
+
+    def _extract_skills_comprehensive(self, text: str) -> Dict[str, List[str]]:
+        # Make sure the text is all lowercase before searching for key skills
+        lower_text = text.lower()
+
+        # Initialise the skills variable to store the skills
+        skills = {
+            'programming_languages': [],
+            'frameworks_libraries': [],
+            'databases': [],
+            'cloud_tools': [],
+            'other_skills': []      
+        }
+
+        # Extract skills using _find_skills_in_text function
+        skills['programming_languages'] = self._find_skills_in_text(lower_text, self.programming_languages)
+        skills['frameworks_libraries'] = self._find_skills_in_text(lower_text, self.frameworks_libraries)
+        skills['databases'] = self._find_skills_in_text(lower_text, self.databases)
+        skills['cloud_tools'] = self._find_skills_in_text(lower_text, self.cloud_tools)
+        skills['other_skills'] = self._find_skills_in_text(lower_text, self.other_skills)
+
+        # Return the skills
+        return skills
+
+    def _find_skills_in_text(self, text: str, skill_set: set) -> List[str]:
+        # Initialise the found skills variable to store the skills
+        found_skills = []
+
+        for skill in skill_set:
+            # Handle edge cases of skills for example "Nodejs" vs "Node.js"
+            skill_varitations = [skill, skill.replace(".", ""), skill.replace(" ", "")]
+
+            # Loop through the skill_varitations and check if the skill is in the text
+            for variation in skill_varitations:
+                if variation in text:
+                    # Ensure the skill is the whole word and not found in a word
+                    # E.g. "C" should not be found in "Cafe Manager"
+                    if len(skill) <= 2:
+                        pattern = r'\b' + re.escape(skill.upper()) + r'\b'
+                        if re.search(pattern, text.upper()):
+                            found_skills.append(skill.upper())
+                            break
+                    else:
+                        # If not a shorter skill like C# or C then assume a match and append found_skills array
+                        found_skills.append(skill.title())
+                        break
+
+        # Return the found skills
+        return found_skills
+
+    def _extract_entities_filtered(self, doc, text: str) -> Dict[str, List[str]]:
+        # Initialise the entities variable to store the entities
+        # Compared to the previous iteration we are looking to filter out any of the skills, education, work experience that we have handled ourselves
+        # This is to avoid duplicate information and hopefully reduce the amount of false positives for information
+        entities = {
+            'names': [],
+            'organizations': [],
+            'dates': [],
+            'locations': []
+        }
+
+        # Creating a master variable to store all the skills to filter out
+        skill_words = set()
+
+        # Adding previous skills to the master variable
+        for skill_set in [self.programming_languages, self.frameworks_libraries, self.databases, self.cloud_tools, self.other_skills]:
+            skill_words.update(skill_set)
+
+        # Looping through the entities and checking if they are in the master variable
+        for ent in doc.ents:
+            entity_text = ent.text.strip()
+            entity_lower = entity_text.lower()
+
+            # If the entity is in the master variable, skip it
+            if entity_lower in skill_words:
+                continue
+
+            # CV words that from previous iterations are missclassified as entities
+            cv_words = {'cv', 'resume', 'portfolio', 'skills', 'experience', 'education'}
+            
+            # If the entity is a CV word, skip it
+            if entity_lower in cv_words:
+                continue
+
+            # If the entity is a person and the length is greater than 2, add it to the names array
+            if ent.label_ == 'PERSON' and len(entity_text) > 2:
+                entities['names'].append(entity_text)
+            # If the entity is an organization and the length is greater than 1, add it to the organizations array    
+            elif ent.label_ == 'ORG' and len(entity_text) > 1:
+                entities['organizations'].append(entity_text)
+            # If the entity is a date, add it to the dates array
+            elif ent.label_ == 'DATE':
+                entities['dates'].append(entity_text)
+            # If the entity is a location, add it to the locations array
+            elif ent.label_ in ['GPE', 'LOC']:
+                entities['locations'].append(entity_text)
+
+        # Remove duplicates from the entities
+        for key in entities:
+            entities[key] = list(set(entities[key]))
+
+        # Return the entities
+        return entities
+
+    def _extract_experience_indicators(self, text: str) -> List[str]:
+        # Extract phrases that indicate work experience
+        experience_patterns = [
+            r'(\d+)\+?\s*years?\s+(?:of\s+)?experience',
+            r'experienced?\s+in\s+([^.]+)',
+            r'worked?\s+(?:as\s+)?(?:a\s+)?([^.]+)',
+            r'(\d+)\+?\s*years?\s+(?:working\s+)?with'
+        ]
+        
+        # Variable to store extracted experience indicators
+        indicators = []
+        
+        # Loop through the experience_patterns and extract the experience indicators using regex
+        for pattern in experience_patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            indicators.extend(matches)
+        
+        # Return the experience indicators
+        return indicators
+
+    def _extract_education_info(self, text: str) -> List[str]:
+        # Extract education information
+        education_patterns = [
+            r'(BSc|MSc|BA|MA|PhD|Bachelor|Master|Degree)\s+[^.]+',
+            r'(University|College|School)\s+[^.]+',
+            r'(GCSE|A-Level|A Level)\s+[^.]*'
+        ]
+        
+        # Variable to store extracted education information
+        education_info = []
+        
+        # Loop through the education_patterns and extract the education information using regex
+        for pattern in education_patterns:
+            matches = re.findall(pattern, text, re.IGNORECASE)
+            education_info.extend(matches)
+        
+        # Return the education information
+        return education_info
+
+def analyze_cv_text(text: str) -> Dict:
+    # Main function to maintain compatibility with existing code 
+    analyzer = EnhancedCVAnalyzer()
+    return analyzer.analyze_cv_text(text)    
