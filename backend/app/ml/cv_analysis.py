@@ -181,7 +181,6 @@ class CVAnalyser:
         skills['frameworks_libraries'] = self._find_skills_in_text(lower_text, self.frameworks_libraries)
         skills['databases'] = self._find_skills_in_text(lower_text, self.databases)
         skills['cloud_tools'] = self._find_skills_in_text(lower_text, self.cloud_tools)
-        skills['other_skills'] = self._find_skills_in_text(lower_text, self.other_skills)
 
         # Return the skills
         return skills
@@ -227,7 +226,7 @@ class CVAnalyser:
         skill_words = set()
 
         # Adding previous skills to the master variable
-        for skill_set in [self.programming_languages, self.frameworks_libraries, self.databases, self.cloud_tools, self.other_skills]:
+        for skill_set in [self.programming_languages, self.frameworks_libraries, self.databases, self.cloud_tools]:
             skill_words.update(skill_set)
 
         # Looping through the entities and checking if they are in the master variable
@@ -305,7 +304,7 @@ class CVAnalyser:
         # Return the education information
         return education_info
 
-def analyze_cv_text(text: str) -> Dict:
+def analyse_cv_text(text: str) -> Dict:
     # Main function to maintain compatibility with existing code 
-    analyzer = EnhancedCVAnalyzer()
-    return analyzer.analyze_cv_text(text)    
+    analyzer = CVAnalyser()
+    return analyzer.analyse_cv_test(text)    
