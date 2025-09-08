@@ -304,7 +304,5 @@ class CVAnalyser:
         # Return the education information
         return education_info
 
-def analyse_cv_text(text: str) -> Dict:
-    # Main function to maintain compatibility with existing code 
-    analyzer = CVAnalyser()
-    return analyzer.analyse_cv_test(text)    
+# Exporting the class rather than a function to utalise a singleton pattern in main.py
+__all__ = ['CVAnalyser']  

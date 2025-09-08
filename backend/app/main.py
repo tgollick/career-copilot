@@ -1,6 +1,6 @@
 # Every day above ground is a great day, remember that!
 from ml.cv_parser import extract_cv_text
-from ml.cv_analysis import analyse_cv_text
+from ml.cv_analysis import CVAnalyser
 import json
 
 def print_analysis_results(analysis):
@@ -51,24 +51,32 @@ def print_analysis_results(analysis):
             print(f"  • {edu}")
 
 def main():
+    # Initialise the CVAnalyser
+    cv_analyser = CVAnalyser()
+
     # Extract text from CV
     cv_path = r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf'
     
-    print("Extracting text from CV...")
-    cv_text = extract_cv_text(cv_path)
-    
-    print("Analyzing CV content...")
-    analysis = analyse_cv_text(cv_text)
-    
-    # Display results
-    print_analysis_results(analysis)
-    
-    # Save results to JSON for further processing
-    # with open('cv_analysis_results.json', 'w') as f:
-    #     json.dump(analysis, f, indent=2)
-    
-    print("\n" + "=" * 50)
-    print("Analysis complete!")
+    # Better error handling for testing the CVAnalyser class
+    try:
+        print("Extracting text from CV...")
+        cv_text = extract_cv_text(cv_path)
+        
+        print("Analyzing CV content...")
+        analysis = cv_analyser.analyse_cv_test(cv_text)
+        
+        # Display results
+        print_analysis_results(analysis)
+        
+        # Save results to JSON for further processing
+        # with open('cv_analysis_results.json', 'w') as f:
+        #     json.dump(analysis, f, indent=2)
+        
+        print("\n" + "=" * 50)
+        print("Analysis complete!")
+    except Exception as e:
+        print(f"Error analyzing CV: {e}")
+        raise
 
 if __name__ == "__main__":
     main()
