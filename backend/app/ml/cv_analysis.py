@@ -1,42 +1,13 @@
 import spacy
 import re
 from typing import Dict, List, Tuple
+from config import programming_languages, frameworks_libraries, databases, cloud_tools
 
 class CVAnalyser:
     def __init__(self):
         # Load the base model
         self.nlp = spacy.load("en_core_web_sm")
 
-        # After testing the base model, it was not able to extract the skills, so we created our own list of skills specific to the job domain.
-
-        # List of programming languages to extract
-        self.programming_languages = {
-            'python', 'javascript', 'typescript', 'java', 'c#', 'c++', 'c',
-            'go', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'scala', 'r',
-            'matlab', 'perl', 'shell', 'bash', 'powershell', 'visual basic'
-        }
-
-        # List of frameworks and libraries to extract
-        self.frameworks_libraries = {
-            'react', 'angular', 'vue', 'node.js', 'express', 'next.js',
-            'django', 'flask', 'spring', 'laravel', '.net', 'jquery',
-            'bootstrap', 'tailwind', 'redux', 'numpy', 'pandas', 'scipy',
-            'scikit-learn', 'tensorflow', 'pytorch', 'keras'
-        }
-        
-        # List of databases to extract
-        self.databases = {
-            'mysql', 'postgresql', 'mongodb', 'sqlite', 'redis', 'oracle',
-            'sql server', 'dynamodb', 'cassandra', 'elasticsearch'
-        }
-        
-        # List of cloud tools to extract
-        self.cloud_tools = {
-            'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins',
-            'git', 'github', 'gitlab', 'bitbucket', 'vercel', 'netlify',
-            'heroku', 'firebase', 'terraform'
-        }
-        
         # CV section patterns (case insensitive)
         self.section_patterns = {
             'objective': r'(?i)(objective|summary|profile|about)',
@@ -177,10 +148,10 @@ class CVAnalyser:
         }
 
         # Extract skills using _find_skills_in_text function
-        skills['programming_languages'] = self._find_skills_in_text(lower_text, self.programming_languages)
-        skills['frameworks_libraries'] = self._find_skills_in_text(lower_text, self.frameworks_libraries)
-        skills['databases'] = self._find_skills_in_text(lower_text, self.databases)
-        skills['cloud_tools'] = self._find_skills_in_text(lower_text, self.cloud_tools)
+        skills['programming_languages'] = self._find_skills_in_text(lower_text, programming_languages)
+        skills['frameworks_libraries'] = self._find_skills_in_text(lower_text, frameworks_libraries)
+        skills['databases'] = self._find_skills_in_text(lower_text, databases)
+        skills['cloud_tools'] = self._find_skills_in_text(lower_text, cloud_tools)
 
         # Return the skills
         return skills
@@ -226,7 +197,7 @@ class CVAnalyser:
         skill_words = set()
 
         # Adding previous skills to the master variable
-        for skill_set in [self.programming_languages, self.frameworks_libraries, self.databases, self.cloud_tools]:
+        for skill_set in [programming_languages, frameworks_libraries, databases, cloud_tools]:
             skill_words.update(skill_set)
 
         # Looping through the entities and checking if they are in the master variable

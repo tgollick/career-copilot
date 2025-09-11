@@ -3,6 +3,7 @@ import math
 from collections import Counter
 import re
 from ml.cosine_similarity import calculate_cosine_similarity
+from config import job_terms, stop_words,all_technical_skills
 
 class TFIDFFromScratch:
     """
@@ -16,33 +17,6 @@ class TFIDFFromScratch:
         self.idf_values = {}
         self.documents = []
         self.results = []
-
-        # Technical skills vocabulary for focused preprocessing
-        self.technical_skills = {
-            'python', 'javascript', 'typescript', 'java', 'react', 'node', 'nodejs',
-            'express', 'nextjs', 'next', 'redux', 'vue', 'angular', 'go', 'rust',
-            'pandas', 'numpy', 'scikit', 'learn', 'tensorflow', 'pytorch',
-            'mongodb', 'postgresql', 'mysql', 'redis', 'docker', 'kubernetes',
-            'aws', 'azure', 'git', 'github', 'spring', 'django', 'flask',
-            'microservices', 'api', 'rest', 'graphql', 'css', 'html', 'bootstrap',
-            'tailwind', 'vercel', 'netlify', 'firebase', 'c', 'cpp', 'csharp'
-        }
-        
-        # Job-related terms (relevant in context of job descriptions)
-        self.job_terms = {
-            'developer', 'engineer', 'scientist', 'analyst', 'manager',
-            'senior', 'junior', 'lead', 'full', 'stack', 'frontend', 'backend',
-            'fullstack', 'web', 'mobile', 'data', 'machine', 'learning',
-            'artificial', 'intelligence', 'software', 'computer', 'science'
-        }
-        
-        # Stop words to ignore completely
-        self.stop_words = {
-            'experience', 'years', 'required', 'preferred', 'knowledge',
-            'skills', 'looking', 'needed', 'position', 'role', 'company',
-            'team', 'work', 'working', 'must', 'have', 'essential', 
-            'technologies', 'startup', 'environment', 'modern', 'development'
-        }
 
     def preprocess_text(self, text: str):
         """
@@ -77,10 +51,10 @@ class TFIDFFromScratch:
         # Filter to keep only relevant terms
         filtered_words = []
         for word in normalised_words:
-            if word in self.technical_skills:
+            if word in all_technical_skills:
                 # Technical skills get double weight for emphasis
                 filtered_words.extend([word] * 2)
-            elif word in self.job_terms:
+            elif word in job_terms:
                 # Job terms get normal weight
                 filtered_words.append(word)
             # Stop words are ignored entirely

@@ -1,9 +1,10 @@
 # Every day above ground is a great day, remember that!
 from ml.cv_parser import extract_cv_text
 from ml.cv_analysis import CVAnalyser
-from ml.cv_profile_builder import balance_cv_weights
+from ml.balance_cv_weight import balance_cv_weights
 from ml.tfidf import test_similarity
 import json
+from config import jobs
 
 def print_analysis_results(analysis):
     # Print the analysis results, but make it look pretty and super readable
@@ -58,16 +59,7 @@ def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_re
     cv_analyser = CVAnalyser()
 
     # Extract text from CV
-    cv_path = r'/home/thomas-gollick/Downloads/Thomas Gollick CV 2024.pdf'
-
-    # Sample job descriptions for testing (can be changed to any job description)
-    jobs = [
-        "React developer needed. Must have JavaScript TypeScript experience. Node.js backend knowledge preferred.",
-        "Python Data Scientist role. Required: pandas numpy scikit-learn machine learning experience. PhD preferred.",
-        "Full Stack Engineer position. Technologies: React Node.js MongoDB JavaScript. Startup environment.",
-        "Java Enterprise Developer. Spring Boot microservices REST APIs. 5+ years experience required.",
-        "Frontend Developer role. React TypeScript Redux experience essential. Modern web development."
-    ]
+    cv_path = r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf'
     
     # Better error handling for testing the CVAnalyser class
     try:
