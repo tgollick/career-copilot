@@ -4,7 +4,7 @@ from ml.cv_analysis import CVAnalyser
 from ml.balance_cv_weight import balance_cv_weights
 from ml.tfidf import test_similarity
 import json
-from ml.config import jobs
+from ml.config import jobs, AppConfig
 
 def print_analysis_results(analysis):
     # Print the analysis results, but make it look pretty and super readable
@@ -54,17 +54,14 @@ def print_analysis_results(analysis):
             print(f"  • {edu}")
 
 
-def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_results=False):
+def main(config):
     # Initialise the CVAnalyser
     cv_analyser = CVAnalyser()
-
-    # Extract text from CV
-    cv_path = r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf'
     
     # Better error handling for testing the CVAnalyser class
     try:
         print("Extracting text from CV...")
-        cv_text = extract_cv_text(cv_path)
+        cv_text = extract_cv_text(config.cv_path)
         
         print("Analyzing CV content...")
         analysis = cv_analyser.analyse_cv_test(cv_text) 
@@ -80,12 +77,12 @@ def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_re
         all_documents = [weighted_cv_text] + jobs
         
         # Display results
-        if show_analysis_results:
+        if config.show_analysis_results:
             print_analysis_results(analysis)
         
         # Save results to JSON for further processing
-        if save_analysis_results:
-            with open('cv_analysis_results.json', 'w') as f:
+        if config.save_analysis_results:
+            with open(config.output_file, 'w') as f:
                 json.dump(analysis, f, indent=2)
         
         print("\n" + "=" * 50)
@@ -97,7 +94,7 @@ def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_re
     # TF-IDF and cosine similarity testing with error handling
     try: 
         print("Testing TF-IDF & Cosine Similarity...")
-        test_similarity(all_documents, show_tfidf_results)
+        test_similarity(all_documents, config.show_tfidf_results)
         
         print("\nTF-IDF & Cosine Similarity testing complete!")
     except Exception as e:
@@ -105,5 +102,13 @@ def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_re
         raise
 
 if __name__ == "__main__":
-    # Run with detailed output for development
-    main(show_analysis_results=False, save_analysis_results=False, show_tfidf_results=True)
+    # Configure the application
+    config = AppConfig(
+        cv_path=r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf',
+        show_tfidf_results=True,
+        show_analysis_results=False,
+        save_analysis_results=False
+    )
+
+    # Run the application with desired config
+    main(config)

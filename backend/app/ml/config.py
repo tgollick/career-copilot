@@ -1,3 +1,21 @@
+from dataclasses import dataclass
+from pathlib import Path
+from typing import Optional
+
+# Dataclass for configuration
+@dataclass
+class AppConfig:
+    """Application configuration for CV analysis and job matching"""
+    cv_path: str
+    show_analysis_results: bool = False
+    save_analysis_results: bool = False
+    show_tfidf_results: bool = False
+    output_file: str = "cv_analysis_results.json"
+    
+    # Future FastAPI configs can go here
+    api_host: str = "localhost"
+    api_port: int = 8000
+
 # Storing all configuration variables for improved code re-useability, maintainability and modularity
 
 # Individual skill sets remain as sets for easy updates
