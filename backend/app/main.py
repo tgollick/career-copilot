@@ -97,18 +97,9 @@ def main(show_analysis_results=False, save_analysis_results=False, show_tfidf_re
     # TF-IDF and cosine similarity testing with error handling
     try: 
         print("Testing TF-IDF & Cosine Similarity...")
-        similarity_results = test_similarity(all_documents, show_tfidf_results)
-        
-        # Display summary results if not showing detailed results
-        if not show_tfidf_results:
-            print("\nJOB MATCHING SUMMARY:")
-            print("-" * 30)
-            for result in similarity_results:
-                print(f"Job {result['job_index']}: {result['match_quality']} ({result['similarity']:.1%})")
+        test_similarity(all_documents, show_tfidf_results)
         
         print("\nTF-IDF & Cosine Similarity testing complete!")
-        return similarity_results
-        
     except Exception as e:
         print(f"Error calculating TF-IDF & Cosine Similarity: {e}")
         raise
