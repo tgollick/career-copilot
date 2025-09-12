@@ -182,11 +182,34 @@ def get_similarity_description(cosine_similarity):
     else:
         return "No Match"
 
-def test_similarity(all_documents, print_results=False):
-    """
-    Test CV similarity against job descriptions using TF-IDF and cosine similarity.
-    """
-    
+def display_similarity_results(results, tfidf_vocabulary, tfidf_matrix):
+    # Display TF-IDF analysis
+    print(f"\nCV SIMILARITY TESTING")
+    print("=" * 50)
+    print(f"Focused vocabulary size: {len(tfidf_vocabulary)}")
+    print(f"Technical terms: {sorted(tfidf_vocabulary)}")
+    print(f"\nCV Matching Results:")
+
+    # Display results
+    for result in results:
+        print(f"Job {result['job_index']}: {result['match_quality']}")
+        print(f"   Similarity: {result['similarity']:.4f} ({result['similarity']*100:.1f}%)")
+        print(f"   Description: {result['description']}")
+
+        # Show top matching terms
+        cv_vector = tfidf_matrix[0]
+        job_vector = tfidf_matrix[result['job_index']]
+        contributions = cv_vector * job_vector
+
+        word_contributions = list(zip(tfidf_vocabulary, contributions))
+        top_matches = sorted(word_contributions, key=lambda x: x[1], reverse=True)[:3]
+
+        print(f"   Top matching terms:")
+        for word, contribution in top_matches:
+            if contribution > 0:
+                print(f"     • {word}: {contribution:.4f}")
+
+def calculate_similarity_results(all_documents):
     # Calculate TF-IDF using our implementation
     tfidf = TFIDFFromScratch()
     tfidf_matrix = tfidf.calculate_tfidf(all_documents)
@@ -195,13 +218,6 @@ def test_similarity(all_documents, print_results=False):
     job_descriptions = all_documents[1:]
     
     results = []
-
-    if print_results:
-        print(f"\nCV SIMILARITY TESTING")
-        print("=" * 50)
-        print(f"Focused vocabulary size: {len(tfidf.vocabulary)}")
-        print(f"Technical terms: {sorted(tfidf.vocabulary)}")
-        print(f"\nCV Matching Results:")
 
     # Calculate similarity between CV and each job
     for i, job in enumerate(job_descriptions, 1):
@@ -216,22 +232,16 @@ def test_similarity(all_documents, print_results=False):
         }
         results.append(result)
 
-        if print_results:
-            print(f"\nJob {i}: {get_similarity_description(similarity)}")
-            print(f"   Similarity: {similarity:.4f} ({similarity*100:.1f}%)")
-            print(f"   Description: {job}")
+    return results, tfidf.vocabulary, tfidf_matrix
 
-            # Show top matching terms
-            cv_vector = tfidf_matrix[0]
-            job_vector = tfidf_matrix[i]
-            contributions = cv_vector * job_vector
-
-            word_contributions = list(zip(tfidf.vocabulary, contributions))
-            top_matches = sorted(word_contributions, key=lambda x: x[1], reverse=True)[:3]
-
-            print(f"   Top matching terms:")
-            for word, contribution in top_matches:
-                if contribution > 0:
-                    print(f"     • {word}: {contribution:.4f}")
+def test_similarity(all_documents, print_results=False):
+    """
+    Test CV similarity against job descriptions using TF-IDF and cosine similarity.
+    """
+    
+    results, tfidf_vocabulary, tfidf_matrix = calculate_similarity_results(all_documents)
+    
+    if print_results:
+        display_similarity_results(results, tfidf_vocabulary, tfidf_matrix)
     
     return results
