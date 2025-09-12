@@ -4,6 +4,7 @@ from collections import Counter
 import re
 from .cosine_similarity import calculate_cosine_similarity
 from .config import job_terms, stop_words,all_technical_skills
+from .job_match_result import JobMatchResult
 
 class TFIDFFromScratch:
     """
@@ -192,13 +193,13 @@ def display_similarity_results(results, tfidf_vocabulary, tfidf_matrix):
 
     # Display results
     for result in results:
-        print(f"Job {result['job_index']}: {result['match_quality']}")
-        print(f"   Similarity: {result['similarity']:.4f} ({result['similarity']*100:.1f}%)")
-        print(f"   Description: {result['description']}")
+        print(f"Job {result.job_index}: {result.match_quality}")
+        print(f"   Similarity: {result.similarity:.4f} ({result.similarity*100:.1f}%)")
+        print(f"   Description: {result.description}")
 
         # Show top matching terms
         cv_vector = tfidf_matrix[0]
-        job_vector = tfidf_matrix[result['job_index']]
+        job_vector = tfidf_matrix[result.job_index]
         contributions = cv_vector * job_vector
 
         word_contributions = list(zip(tfidf_vocabulary, contributions))
@@ -224,12 +225,8 @@ def calculate_similarity_results(all_documents):
         similarity = calculate_cosine_similarity(tfidf_matrix[0], tfidf_matrix[i])
 
         # Store results
-        result = {
-            'job_index': i,
-            'similarity': similarity,
-            'description': job,
-            'match_quality': get_similarity_description(similarity)
-        }
+        result = JobMatchResult(i, similarity, job, get_similarity_description(similarity))
+
         results.append(result)
 
     return results, tfidf.vocabulary, tfidf_matrix
