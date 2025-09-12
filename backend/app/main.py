@@ -4,7 +4,7 @@ from ml.cv_analysis import CVAnalyser
 from ml.balance_cv_weight import balance_cv_weights
 from ml.tfidf import test_similarity
 import json
-from config import jobs
+from ml.config import jobs
 
 def print_analysis_results(analysis):
     # Print the analysis results, but make it look pretty and super readable

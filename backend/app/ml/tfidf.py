@@ -2,8 +2,8 @@ import numpy as np
 import math 
 from collections import Counter
 import re
-from ml.cosine_similarity import calculate_cosine_similarity
-from config import job_terms, stop_words,all_technical_skills
+from .cosine_similarity import calculate_cosine_similarity
+from .config import job_terms, stop_words,all_technical_skills
 
 class TFIDFFromScratch:
     """

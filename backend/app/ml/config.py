@@ -1,4 +1,4 @@
-# config.py
+# Storing all configuration variables for improved code re-useability, maintainability and modularity
 
 # Individual skill sets remain as sets for easy updates
 programming_languages = {
@@ -25,7 +25,7 @@ cloud_tools = {
     'heroku', 'firebase', 'terraform'
 }
 
-# Combining all sub-skills into a single set
+# Combining all sub-skills into a single set for use in the TFIDF module
 all_technical_skills = {
     *programming_languages,
     *frameworks_libraries,
@@ -33,7 +33,7 @@ all_technical_skills = {
     *cloud_tools
 }
 
-# Other configurations
+# Misc and text pre-processing configuration variables
 jobs = [
     "React developer needed. Must have JavaScript TypeScript experience. Node.js backend knowledge preferred.",
     "Python Data Scientist role. Required: pandas numpy scikit-learn machine learning experience. PhD preferred.",
@@ -55,3 +55,4 @@ stop_words = {
     'team', 'work', 'working', 'must', 'have', 'essential', 
     'technologies', 'startup', 'environment', 'modern', 'development'
 }
+

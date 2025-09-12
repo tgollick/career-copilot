@@ -1,29 +1,13 @@
 import spacy
 import re
-from typing import Dict, List, Tuple
-from config import programming_languages, frameworks_libraries, databases, cloud_tools
+from typing import Dict, List
+from .config import programming_languages, frameworks_libraries, databases, cloud_tools
+from .patterns import section_patterns, contact_patterns, experience_patterns, education_patterns
 
 class CVAnalyser:
     def __init__(self):
         # Load the base model
         self.nlp = spacy.load("en_core_web_sm")
-
-        # CV section patterns (case insensitive)
-        self.section_patterns = {
-            'objective': r'(?i)(objective|summary|profile|about)',
-            'experience': r'(?i)(experience|employment|work|career)',
-            'education': r'(?i)(education|qualifications|academic|university|degree)',
-            'skills': r'(?i)(skills|technologies|technical|competencies)',
-            'projects': r'(?i)(projects|portfolio|work samples)'
-        }
-        
-        # Contact info patterns
-        self.contact_patterns = {
-            'email': r'\b[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\.[A-Z|a-z]{2,}\b',
-            'phone': r'(\+\d{1,3}[-.\s]?)?\(?\d{3,4}\)?[-.\s]?\d{3,4}[-.\s]?\d{3,4}',
-            'linkedin': r'linkedin\.com/in/[\w-]+',
-            'github': r'github\.com/[\w-]+'
-        }
 
     def analyse_cv_test(self, text: str) -> Dict:
         # Process the text with the loaded spaCy model
@@ -77,7 +61,7 @@ class CVAnalyser:
         contact_info = {}
 
         # Loop through the contact_patterns dictionary and extract the contact information using regex
-        for info_type, pattern in self.contact_patterns.items():
+        for info_type, pattern in contact_patterns.items():
             matches = re.findall(pattern, text)
             if matches:
                 # If the match is a string, store it as is, otherwise store the first match
@@ -110,7 +94,7 @@ class CVAnalyser:
             section_found = None
 
             # Iterate through the section_patterns dictionary and extract the section information using regex (if found)
-            for section_name, pattern in self.section_patterns.items():
+            for section_name, pattern in section_patterns.items():
                 if re.search(pattern, line) and len(line) < 50:
                     section_found = section_name
                     break
@@ -238,13 +222,6 @@ class CVAnalyser:
 
     def _extract_experience_indicators(self, text: str) -> List[str]:
         # Extract phrases that indicate work experience
-        experience_patterns = [
-            r'(\d+)\+?\s*years?\s+(?:of\s+)?experience',
-            r'experienced?\s+in\s+([^.]+)',
-            r'worked?\s+(?:as\s+)?(?:a\s+)?([^.]+)',
-            r'(\d+)\+?\s*years?\s+(?:working\s+)?with'
-        ]
-        
         # Variable to store extracted experience indicators
         indicators = []
         
@@ -258,12 +235,6 @@ class CVAnalyser:
 
     def _extract_education_info(self, text: str) -> List[str]:
         # Extract education information
-        education_patterns = [
-            r'(BSc|MSc|BA|MA|PhD|Bachelor|Master|Degree)\s+[^.]+',
-            r'(University|College|School)\s+[^.]+',
-            r'(GCSE|A-Level|A Level)\s+[^.]*'
-        ]
-        
         # Variable to store extracted education information
         education_info = []
         
