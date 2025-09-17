@@ -4,7 +4,9 @@ from ml.cv_analysis import CVAnalyser
 from ml.balance_cv_weight import balance_cv_weights
 from ml.tfidf import test_similarity
 import json
+from pathlib import Path
 from ml.config import jobs, AppConfig
+from ml.exceptions import PDFPassingError, CVAnalysisError, SpacyModelError, InsufficientDataError, TFIDFCalculationError
 
 def print_analysis_results(analysis):
     # Print the analysis results, but make it look pretty and super readable
@@ -54,9 +56,25 @@ def print_analysis_results(analysis):
             print(f"  • {edu}")
 
 
+def validate_cv_path(cv_path: str):
+    """Validate CV file path exists and is readable"""
+    path = Path(cv_path)
+    
+    if not path.exists():
+        raise CVAnalysisError(f"CV file does not exist: {cv_path}")
+    
+    if not path.is_file():
+        raise CVAnalysisError(f"Path is not a file: {cv_path}")
+    
+    if path.suffix.lower() not in ['.pdf']:
+        raise CVAnalysisError(f"Unsupported file type: {path.suffix}")
+
 def main(config):
     # Initialise the CVAnalyser
     cv_analyser = CVAnalyser()
+
+    # Validate cv path
+    validate_cv_path(config.cv_path)
     
     # Better error handling for testing the CVAnalyser class
     try:
@@ -87,24 +105,39 @@ def main(config):
         
         print("\n" + "=" * 50)
         print("Analysis complete!")
-    except Exception as e:
-        print(f"Error analyzing CV: {e}")
-        raise
 
-    # TF-IDF and cosine similarity testing with error handling
-    try: 
+        # TF-IDF and Cosine Similarity
         print("Testing TF-IDF & Cosine Similarity...")
         test_similarity(all_documents, config.show_tfidf_results)
         
         print("\nTF-IDF & Cosine Similarity testing complete!")
+
+    except PDFPassingError as e:
+        print(f"PDF Error: {e}")
+        print("Please check that the file exists and is a valid PDF.")
+        return False
+        
+    except SpacyModelError as e:
+        print(f"spaCy Model Error: {e}")
+        return False
+        
+    except InsufficientDataError as e:
+        print(f"Data Error: {e}")
+        print("Please provide a CV with more content.")
+        return False
+        
+    except TFIDFCalculationError as e:
+        print(f"Analysis Error: {e}")
+        return False
+        
     except Exception as e:
-        print(f"Error calculating TF-IDF & Cosine Similarity: {e}")
-        raise
+        print(f"Unexpected error: {e}")
+        raise  # Re-raise for debugging
 
 if __name__ == "__main__":
     # Configure the application
     config = AppConfig(
-        cv_path=r'/home/thomas-gollick/Downloads/Thomas Gollick CV 2024.pdf',
+        cv_path=r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf',
         show_tfidf_results=True,
         show_analysis_results=False,
         save_analysis_results=False

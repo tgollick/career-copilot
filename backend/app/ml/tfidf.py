@@ -5,6 +5,7 @@ import re
 from .cosine_similarity import calculate_cosine_similarity
 from .config import job_terms, stop_words,all_technical_skills
 from .job_match_result import JobMatchResult
+from .exceptions import TFIDFCalculationError, InsufficientDataError
 
 class TFIDFFromScratch:
     """
@@ -102,31 +103,56 @@ class TFIDFFromScratch:
         Calculate TF-IDF vectors for all documents using smart preprocessing.
         Returns numpy array of TF-IDF vectors.
         """
-        # Preprocess all documents
-        documents = [self.preprocess_text(doc) for doc in documents_text]
-        self.documents = documents
 
-        # Calculate IDF values across all documents
-        self.idf_values = self.calculate_idf(documents)
+        # Check if documents_text is empty 
+        if not documents_text:
+            raise TFIDFCalculationError("No documents provided for anaylsis")
+
+        try:
+            # Preprocess all documents
+            documents = [self.preprocess_text(doc) for doc in documents_text]
+
+            # Remove empty documents after preprocessing
+            non_empty_docs = [doc for doc in documents if doc]
+
+            # Raise error if there is missing information after preprocessing
+            if len(non_empty_docs) < len(documents):
+                raise InsufficientDataError(
+                    f"Only {len(non_empty_docs)}/{len(documents)} documents contained relevant information for analysis"
+                )
+
+            self.documents = documents
+
+            # Calculate IDF values across all documents
+            self.idf_values = self.calculate_idf(documents)
+
+            # Raise error if no vocabulary found after IDF calculation
+            if not self.idf_values:
+                raise TFIDFCalculationError("No vocabulary found after IDF calculation")
+            
+            # Build vocabulary from all unique words
+            self.vocabulary = list(self.idf_values.keys())
+
+            # Calculate TF-IDF vectors for each document
+            tfidf_vectors = []
+            for doc in documents:
+                # Calculate term frequencies for this document
+                tf_dict = self.calculate_tf(doc)
+
+                # Create TF-IDF vector for this document
+                tfidf_vector = []
+                for word in self.vocabulary:
+                    tf = tf_dict.get(word, 0)
+                    idf = self.idf_values.get(word, 0)
+                    tfidf_score = tf * idf
+                    tfidf_vector.append(tfidf_score)
+
+                tfidf_vectors.append(tfidf_vector)
         
-        # Build vocabulary from all unique words
-        self.vocabulary = list(self.idf_values.keys())
-
-        # Calculate TF-IDF vectors for each document
-        tfidf_vectors = []
-        for doc in documents:
-            # Calculate term frequencies for this document
-            tf_dict = self.calculate_tf(doc)
-
-            # Create TF-IDF vector for this document
-            tfidf_vector = []
-            for word in self.vocabulary:
-                tf = tf_dict.get(word, 0)
-                idf = self.idf_values.get(word, 0)
-                tfidf_score = tf * idf
-                tfidf_vector.append(tfidf_score)
-
-            tfidf_vectors.append(tfidf_vector)
+        except Exception as e:
+            if isinstance(e, (TFIDFCalculationError, InsufficientDataError)):
+                raise
+            raise TFIDFCalculationError(f"Error calculating TF-IDF: {str(e)}")   
 
         return np.array(tfidf_vectors)
 
