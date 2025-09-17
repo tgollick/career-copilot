@@ -104,11 +104,11 @@ def main(config):
 if __name__ == "__main__":
     # Configure the application
     config = AppConfig(
-        cv_path=r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf',
+        cv_path=r'/home/thomas-gollick/Downloads/Thomas Gollick CV 2024.pdf',
         show_tfidf_results=True,
         show_analysis_results=False,
         save_analysis_results=False
-    )
+    )   
 
     # Run the application with desired config
     main(config)

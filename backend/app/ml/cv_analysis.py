@@ -3,11 +3,20 @@ import re
 from typing import Dict, List
 from .config import programming_languages, frameworks_libraries, databases, cloud_tools
 from .patterns import section_patterns, contact_patterns, experience_patterns, education_patterns
+from .exceptions import SpacyModelError
 
 class CVAnalyser:
     def __init__(self):
         # Load the base model
-        self.nlp = spacy.load("en_core_web_sm")
+        try:
+            self.nlp = spacy.load("en_core_web_sm")
+        except OSError:
+            raise SpacyModelError(
+                "spaCy English model not found. Install with: "
+                "python -m spacy download en_core_web_sm"
+            )
+        except Exception as e:
+            raise SpacyModelError(f"Failed to load spaCy model: {str(e)}")
 
     def analyse_cv_test(self, text: str) -> Dict:
         # Process the text with the loaded spaCy model
