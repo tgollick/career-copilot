@@ -1,7 +1,8 @@
 import React from "react";
+import { type Job } from "@/db/schema";
 
 type Props = {
-  job: object;
+  job: Job;
 };
 
 const JobTile = (props: Props) => {

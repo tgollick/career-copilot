@@ -1,9 +1,10 @@
 "use client";
 import React from "react";
 import JobTile from "./JobTile";
+import { type Job } from "@/db/schema";
 
 type Props = {
-  initialJobs: object[];
+  initialJobs: Job[];
 };
 
 const JobBoard = (props: Props) => {

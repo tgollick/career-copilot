@@ -1,11 +1,11 @@
 import JobBoard from "@/components/jobs/JobBoard";
-import { jobs } from "@/db/schema";
+import { jobs, type Job } from "@/db/schema";
 import { db } from "@/lib";
 import React from "react";
 // type Props = {}
 
 const JobsPage = async () => {
-  const initialJobs = await db.select().from(jobs).limit(10);
+  const initialJobs: Job[] = await db.select().from(jobs).limit(10);
 
   return (
     <div className="w-full flex items-center justify-center">
