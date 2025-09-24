@@ -18,7 +18,7 @@ const Header = () => {
         <p className="text-2xl fontbold">Career Co-Pilot 🚁</p>
       </Link>
 
-      {/* Nav that shows if authenticated */}
+      {/* Nav and User Avatar/button that shows if authenticated */}
       <SignedIn>
         <div className="flex items-center gap-4">
           <nav className="flex items-center gap-4">
@@ -41,14 +41,13 @@ const Header = () => {
       </SignedIn>
 
       {/* Login or Sign up button from Clerk if user is not authenticated*/}
-
       <SignedOut>
         <div>
           <SignInButton>
             <button className="hover:cursor-pointer">Sign In</button>
           </SignInButton>
           <SignUpButton>
-            <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-10 sm:h-12 px-2 sm:px-5 cursor-pointer ml-4">
+            <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-8 sm:h-10 px-2 sm:px-4 cursor-pointer ml-4">
               Sign Up
             </button>
           </SignUpButton>
