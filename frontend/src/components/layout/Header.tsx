@@ -12,23 +12,38 @@ import {
 
 const Header = () => {
   return (
-    <div className="flex items-center justify-between py-4 px-8 fixed w-full h-fit z-50">
+    <header className="flex items-center justify-between py-4 px-8 fixed w-full h-fit z-50">
       {/* Header Title */}
       <Link href="/">
         <p className="text-2xl fontbold">Career Co-Pilot 🚁</p>
       </Link>
 
       {/* Nav that shows if authenticated */}
-      <nav className="flex items-center gap-4">
-        <Link href="/dashboard">Dashboard</Link>
-        <Link href="/jobs">Jobs</Link>
-        <Link href="/applications">Applications</Link>
-        <Link href="/profile">Profile</Link>
-      </nav>
+      <SignedIn>
+        <div className="flex items-center gap-4">
+          <nav className="flex items-center gap-4">
+            <Link prefetch={false} href="/dashboard">
+              Dashboard
+            </Link>
+            <Link prefetch={false} href="/jobs">
+              Jobs
+            </Link>
+            <Link prefetch={false} href="/applications">
+              Applications
+            </Link>
+            <Link prefetch={false} href="/profile">
+              Profile
+            </Link>
+          </nav>
 
-      {/* Login or Sign up button from Clerk*/}
-      <div>
-        <SignedOut>
+          <UserButton />
+        </div>
+      </SignedIn>
+
+      {/* Login or Sign up button from Clerk if user is not authenticated*/}
+
+      <SignedOut>
+        <div>
           <SignInButton>
             <button className="hover:cursor-pointer">Sign In</button>
           </SignInButton>
@@ -37,13 +52,9 @@ const Header = () => {
               Sign Up
             </button>
           </SignUpButton>
-        </SignedOut>
-
-        <SignedIn>
-          <UserButton />
-        </SignedIn>
-      </div>
-    </div>
+        </div>
+      </SignedOut>
+    </header>
   );
 };
 
