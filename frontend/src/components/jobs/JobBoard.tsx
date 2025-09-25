@@ -5,13 +5,14 @@ import { type Job } from "@/db/schema";
 
 type Props = {
   initialJobs: Job[];
+  isAuthed: boolean;
 };
 
 const JobBoard = (props: Props) => {
   return (
     <div>
       {props.initialJobs.map((job, i) => (
-        <JobTile key={i} job={job} />
+        <JobTile key={i} job={job} isAuthed={props.isAuthed} />
       ))}
     </div>
   );
