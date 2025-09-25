@@ -26,5 +26,3 @@ def generateCoverLetter():
     except Exception as e:
         print(f"Error generating cover letter: {e}")
         return "Sorry, I couldn't generate a cover letter at this time. Please try again later."
-
-print(generateCoverLetter())
