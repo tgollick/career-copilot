@@ -139,8 +139,8 @@ if __name__ == "__main__":
     config = AppConfig(
         cv_path=r'C:\Users\thoma\Downloads\Thomas Gollick CV 2024.pdf',
         show_tfidf_results=True,
-        show_analysis_results=False,
-        save_analysis_results=False
+        show_analysis_results=True,
+        save_analysis_results=True
     )   
 
     # Run the application with desired config

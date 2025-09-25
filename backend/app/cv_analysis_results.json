@@ -1,0 +1,105 @@
+{
+  "contact_info": {
+    "email": "thomasgollick@gmail.com",
+    "phone": "",
+    "linkedin": "linkedin.com/in/thomasgollick",
+    "github": "github.com/tgollick"
+  },
+  "sections": {
+    "objective": "Final year Computer Science student at Manchester Metropolitan University projected to achieve a 1st class degree.\nKeen interests in full-stack development, artificial intelligence and machine learning. Seeking graduate roles to help\nexpand my knowledge and gain valuable experience as a developer.",
+    "education": "GCSE and A-Level Computer Science, Chatham and Clarendon Grammar School 2015 - 2019\nBSc (Hons) Computer Science, Manchester Metropolitan 2021 - 2025\n\u2022 Completed modules including Data Structures and Algorithms, Artificial Intelligence, Operating Sys-\ntems, Software Development Processes, Mathematics for Computing, Databases, Computer Ar-\nchitecture and Web Development. Consistently achieving 70% or higher in each module, attaining a\nfirst-class performance.\n\u2022 Developed proficiency in a diverse set of programming languages, including C#, Java, Python, JavaScript,\nTypeScript, Visual Basic, C and Go through hands-on experience gained in modules. Additionally, gained\nexpertise in agile development methodologies and participated in peer reviews, contributing to a\nwell-rounded skill set.\n\u2022 Applied theoretical knowledge in practical settings by actively participating in team projects. Demonstrated\nstrong teamwork skills and leadership capabilities, successfully leading projects to completion.",
+    "skills": "Programming Languages & Technologies: C#, Java, Python, JavaScript, TypeScript, Visual Basic, C, Go\nFrameworks, Libraries & Tools: Node.js, React.js, Next.js, Redux, Scikit-learn, Numpy, Pandas\nDevelopment & Collaboration Tools: Visual Studio, VS Code, IntelliJ, Eclipse, Git, Vercel",
+    "projects": "AI CV Generator. Built a CV generator site using AI by using React.JS, Node.JS, Tailwind CSS and Open AI\u2019s\nGPT 3.5 Model API. Helps users input basic information about their skills and previous roles and allows GPT 3.5\nModel to generate the bulk of the CV. Landed my brother a role using the CV generated. (Live site/Github repo)\nPortfolio Website. Built a portfolio site using Next.JS, Typescript, Tailwind CSS and Sanity CMS. This project\nwas fundamental to solidifying my front-end skills whilst also using a Sanity, a content management system, for\nseamless changes to the site content of the website. (Live site/Github repo)\nTwitter Clone Built a twitter clone social media application using Next.JS, Node.JS, MongoDB Atlas and Vercel.\nWith this project I gained valuable experience using a NoSQL database service such as MongoDB Atlas to store user\ninformation creating API endpoints using Node.JS. This project also utilized the JAMStack (Javascript, API\u2019s and\nMarkup) standards to help create a reusable, fast and modern web application.(Github repo)",
+    "experience": "IT Technician March 2021 - July 2021\nWren Healthcare Sandwich, Kent\n\u2022 Designed and created a comprehensive COVID testing system from scratch, enabling individuals to undergo\ntesting remotely via Zoom and receive a fit-to-fly certificate for international travel, generating a new line of\nrevenue for the company during the COVID era.\n\u2022 Demonstrated adept troubleshooting skills under pressure to address and resolve various IT issues promptly.\n\u2022 Ensureddailyupkeepandmaintenanceofrelevantsystemsandnetworkstoensureaslittledowntimeaspossible."
+  },
+  "skills": {
+    "programming_languages": [
+      "Typescript",
+      "C",
+      "Java",
+      "Visual Basic",
+      "GO",
+      "Javascript",
+      "Python"
+    ],
+    "frameworks_libraries": [
+      "Numpy",
+      "React",
+      "Redux",
+      "Tailwind",
+      ".Net",
+      "Pandas",
+      "Scikit-Learn",
+      "Next.Js",
+      "Node.Js"
+    ],
+    "databases": [
+      "Mongodb"
+    ],
+    "cloud_tools": [
+      "Github",
+      "Git",
+      "Vercel"
+    ],
+    "other_skills": []
+  },
+  "entities": {
+    "names": [
+      "Clarendon Grammar",
+      "Atlas",
+      "Portfolio Website",
+      "Markup",
+      "Manchester Metropolitan 2021 - 2025",
+      "COVID",
+      "Wren Healthcare",
+      "linkedin.com/in/thomasgollick",
+      "Node",
+      "Algorithms"
+    ],
+    "organizations": [
+      "AI",
+      "\u2022 Applied",
+      "GPT",
+      "Twitter Clone Built",
+      "\u2022 Completed",
+      "Programming Languages & Technologies",
+      "CSS",
+      "Next",
+      "Sanity",
+      "Software Development Processes, Mathematics for Computing,",
+      "Manchester Metropolitan University",
+      "\u2022 Ensureddailyupkeepandmaintenanceofrelevantsystemsandnetworkstoensureaslittledowntimeaspossible",
+      "A-Level Computer Science",
+      "Pandas\nDevelopment & Collaboration Tools",
+      "Frameworks, Libraries & Tools",
+      "Visual Basic, C",
+      "Node",
+      "CMS",
+      "GCSE",
+      "\u2022 Demonstrated",
+      "\u2022 Developed",
+      "API",
+      "Data Structures"
+    ],
+    "dates": [
+      "2015 - 2019",
+      "March 2021 - July 2021",
+      "734301"
+    ],
+    "locations": [
+      "NoSQL",
+      "UK",
+      "Chatham",
+      "London",
+      "React.js",
+      "Scikit"
+    ]
+  },
+  "experience_indicators": [],
+  "education_info": [
+    "BSc",
+    "University",
+    "School",
+    "GCSE"
+  ]
+}
