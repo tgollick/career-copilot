@@ -1,5 +1,8 @@
-import React from "react";
+"use client";
+
+import React, { useState } from "react";
 import { type Job } from "@/db/schema";
+import { SpinnerCircularSplit } from "spinners-react";
 
 type Props = {
   job: Job;
@@ -7,8 +10,12 @@ type Props = {
 };
 
 const JobTile = (props: Props) => {
+  const [loading, setLoading] = useState<boolean>(false);
+
   const getCoverLetter = async (job: Job) => {
     try {
+      setLoading(true);
+
       const res = await fetch("/api/generate-cover-letter", {
         method: "POST",
         headers: {
@@ -28,6 +35,8 @@ const JobTile = (props: Props) => {
     } catch (e) {
       console.error("Error generating cover letter:", e);
       return null;
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -64,13 +73,31 @@ const JobTile = (props: Props) => {
           </button>
           {props.isAuthed && (
             <button
+              disabled={loading}
               onClick={(e) => {
                 e.preventDefault();
                 getCoverLetter(props.job);
               }}
-              className="w-fit bg-gray-700 text-white px-4 py-2 hover:cursor-pointer rounded-sm"
+              className={`w-fit bg-gray-700 text-white px-4 py-2 rounded-sm ${
+                loading
+                  ? "opacity-50 cursor-not-allowed"
+                  : "hover:cursor-pointer"
+              }`}
             >
-              Generate Cover Letter
+              {loading ? (
+                <div className="flex flex-row items-center gap-2">
+                  Generating{" "}
+                  <SpinnerCircularSplit
+                    size={20}
+                    thickness={180}
+                    speed={78}
+                    color="#36ad47"
+                    secondaryColor="rgba(0, 0, 0, 0.44)"
+                  />
+                </div>
+              ) : (
+                "Generate Cover Letter"
+              )}
             </button>
           )}
         </div>
