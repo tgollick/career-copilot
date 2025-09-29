@@ -15,6 +15,11 @@ const envSchema = z.object({
   NODE_ENV: z
     .enum(["development", "production", "test"])
     .default("development"),
+
+  // Deepseek API Key
+  DEEPSEEK_API_KEY: z
+    .string()
+    .min(1, "Please enter a API key for Deepseek Module"),
 });
 
 // Validate environment variables
@@ -25,6 +30,7 @@ const parseEnv = () => {
     CLERK_SECRET_KEY: process.env.CLERK_SECRET_KEY,
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
+    DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
   });
 
   if (!parsed.success) {

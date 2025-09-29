@@ -7,6 +7,30 @@ type Props = {
 };
 
 const JobTile = (props: Props) => {
+  const getCoverLetter = async (job: Job) => {
+    try {
+      const res = await fetch("/api/generate-cover-letter", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ job }), // wrap job in an object
+      });
+
+      if (!res.ok) {
+        throw new Error(`Request failed with status ${res.status}`);
+      }
+
+      const data = await res.json();
+      console.log("Generated cover letter:", data.coverLetter);
+
+      return data.coverLetter;
+    } catch (e) {
+      console.error("Error generating cover letter:", e);
+      return null;
+    }
+  };
+
   return (
     <div className="bg-neutral-900 p-4 rounded-md flex flex-col mb-4">
       <div className="flex gap-10">
@@ -39,7 +63,13 @@ const JobTile = (props: Props) => {
             Apply Now
           </button>
           {props.isAuthed && (
-            <button className="w-fit bg-gray-700 text-white px-4 py-2 hover:cursor-pointer rounded-sm">
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                getCoverLetter(props.job);
+              }}
+              className="w-fit bg-gray-700 text-white px-4 py-2 hover:cursor-pointer rounded-sm"
+            >
               Generate Cover Letter
             </button>
           )}
