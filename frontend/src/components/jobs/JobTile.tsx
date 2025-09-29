@@ -3,6 +3,8 @@
 import React, { useState } from "react";
 import { type Job } from "@/db/schema";
 import { SpinnerCircularSplit } from "spinners-react";
+import { CoverLetterDocument } from "./CoverLetterDocument";
+import { pdf } from "@react-pdf/renderer";
 
 type Props = {
   job: Job;
@@ -31,13 +33,36 @@ const JobTile = (props: Props) => {
       const data = await res.json();
       console.log("Generated cover letter:", data.coverLetter);
 
-      return data.coverLetter;
+      return data;
     } catch (e) {
       console.error("Error generating cover letter:", e);
       return null;
     } finally {
       setLoading(false);
     }
+  };
+
+  const openCoverLetterPDF = async (
+    coverLetter: string,
+    jobTitle: string,
+    companyName: string,
+    candidateName: string,
+    candidateContact: string
+  ) => {
+    const doc = (
+      <CoverLetterDocument
+        coverLetter={coverLetter}
+        jobTitle={jobTitle}
+        companyName={companyName}
+        candidateContact={candidateContact}
+        candidateName={candidateName}
+      />
+    );
+    const asPdf = pdf(doc);
+
+    const blob = await asPdf.toBlob();
+    const url = URL.createObjectURL(blob);
+    window.open(url, "_blank");
   };
 
   return (
@@ -74,9 +99,20 @@ const JobTile = (props: Props) => {
           {props.isAuthed && (
             <button
               disabled={loading}
-              onClick={(e) => {
+              onClick={async (e) => {
                 e.preventDefault();
-                getCoverLetter(props.job);
+                setLoading(true);
+                const data = await getCoverLetter(props.job);
+                if (data) {
+                  openCoverLetterPDF(
+                    data.coverLetter,
+                    props.job.title,
+                    data.companyName,
+                    data.candidateName,
+                    data.candidateContact
+                  );
+                }
+                setLoading(false);
               }}
               className={`w-fit bg-gray-700 text-white px-4 py-2 rounded-sm ${
                 loading

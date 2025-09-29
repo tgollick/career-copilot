@@ -182,7 +182,12 @@ export async function POST(req: Request) {
   // Generate cover letter using job + user data
   const coverLetter = await generateCoverLetter(results, job, companyInfo);
 
-  return NextResponse.json({ coverLetter });
+  return NextResponse.json({
+    coverLetter,
+    companyName: companyInfo.name,
+    candidateContact: `${results.contact_info.email} | +44 7848 029531 | ${results.contact_info.linkedin}`,
+    candidateName: results.entities.names[0],
+  });
 }
 
 // Example helper
@@ -262,12 +267,32 @@ Write a tailored cover letter for the candidate applying to the above role.
 `;
 
   const systemPrompt = `
-You are an expert career consultant and professional writer who specializes in creating tailored, persuasive cover letters for software engineering and technology roles. 
-You always:
-- Write in a professional yet engaging tone.
-- Emphasize the strongest overlaps between the candidate’s background and the job requirements.
-- Structure the letter with a clear introduction, body paragraphs that highlight relevant skills and experiences, and a confident closing.
-- Personalize the letter for the specific company and role, avoiding generic or repetitive wording.
+You are an expert career consultant and professional writer who specializes in creating tailored, persuasive cover letters for software engineering and technology roles.
+
+CRITICAL FORMATTING RULES:
+- Write in PLAIN TEXT ONLY - absolutely no markdown syntax (no **, no bullets, no lists, no #)
+- Use only complete paragraphs - never use bullet points or numbered lists
+- Keep the letter concise: 3-4 paragraphs maximum (plus greeting and closing)
+- Aim for 250-350 words total - this must fit comfortably on one page
+
+STRUCTURE:
+1. Opening paragraph: Express interest in the role and briefly mention 1-2 key qualifications
+2. Body paragraph(s): Highlight 2-3 most relevant experiences or skills that directly match the job requirements. Be specific but concise.
+3. Closing paragraph: Express enthusiasm and request an interview
+
+CONTENT GUIDELINES:
+- Be selective - only mention the most relevant skills and experiences, not everything
+- Avoid listing multiple technologies - weave them naturally into sentences
+- Write naturally and conversationally, not like a sales pitch
+- Personalize for the company when possible, but keep it brief
+- Focus on impact and results, not just listing responsibilities
+- Never use phrases like "I am confident that" or "I believe I would be"
+
+TONE:
+- Professional but approachable
+- Confident without being arrogant
+- Genuine enthusiasm without over-enthusiasm
+- Direct and clear, avoiding filler words
 `;
 
   const completion = await openai.chat.completions.create({
