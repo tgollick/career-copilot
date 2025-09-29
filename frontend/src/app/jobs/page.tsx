@@ -6,7 +6,7 @@ import React from "react";
 // type Props = {}
 
 const JobsPage = async () => {
-  const initialJobs: Job[] = await db.select().from(jobs).limit(10);
+  const initialJobs: Job[] = await db.select().from(jobs).limit(15);
   const { isAuthenticated } = await auth();
 
   return (

@@ -1,3 +1,5 @@
+import { LargeNumberLike } from "crypto";
+
 export type CVAnalysisResults = {
   contact_info: {
     email: string;
@@ -28,4 +30,13 @@ export type CVAnalysisResults = {
   };
   experience_indicators: string[];
   education_info: string[];
+};
+
+export type PaginationInfo = {
+  currentPage: number;
+  totalPages: number;
+  totalItems: number;
+  itemsPerPage: number;
+  hasNextPage: boolean;
+  hasPreviousPage: boolean;
 };
