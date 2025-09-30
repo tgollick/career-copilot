@@ -24,6 +24,11 @@ export default clerkMiddleware(async (auth, req) => {
     return redirectToSignIn({ returnBackUrl: req.url });
   }
 
+  // ⭐ FIX: Don't redirect API routes - let them handle auth themselves
+  if (req.nextUrl.pathname.startsWith("/api/")) {
+    return NextResponse.next();
+  }
+
   // If user is authenticated and hasnt completed onboarding, redirect them to /onboarding
   if (isAuthenticated && !sessionClaims.metadata.onboardingComplete) {
     const onboardingUrl = new URL("/onboarding", req.url);
