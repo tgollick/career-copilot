@@ -5,7 +5,7 @@ import { auth } from "@clerk/nextjs/server";
 import type { CVAnalysisData } from "@/db/schema";
 
 // Configuration
-const FASTAPI_URL = process.env.FASTAPI_URL || "http://localhost:8000";
+const FASTAPI_URL = "http://127.0.0.1:8000";
 
 export async function POST(req: NextRequest) {
   try {
