@@ -1,137 +1,200 @@
 // frontend/src/app/onboarding/page.tsx
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
+import { completeOnboarding } from "./_actions";
+import OnboardingForm from "@/components/onboarding/OnboardingForm";
+import type { CvAnalysis } from "@/db/schema";
 
-const OnboardingPage = () => {
+type OnboardingStep = "loading" | "upload" | "review";
+
+export default function OnboardingPage() {
   const router = useRouter();
+  const [step, setStep] = useState<OnboardingStep>("loading");
+  const [cvAnalysis, setCvAnalysis] = useState<CvAnalysis | null>(null);
   const [file, setFile] = useState<File | null>(null);
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState<string>("");
-  const [success, setSuccess] = useState<string>("");
+  const [uploading, setUploading] = useState(false);
+  const [error, setError] = useState("");
+
+  // Check if user has already uploaded CV
+  useEffect(() => {
+    checkForExistingCV();
+  }, []);
+
+  const checkForExistingCV = async () => {
+    try {
+      const response = await fetch("/api/cv/upload");
+
+      if (response.ok) {
+        const data = await response.json();
+        if (data.success && data.data) {
+          setCvAnalysis(data.data);
+          setStep("review");
+          return;
+        }
+      }
+
+      // No CV found, show upload form
+      setStep("upload");
+    } catch (err) {
+      console.error("Error checking for CV:", err);
+      setStep("upload");
+    }
+  };
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files && e.target.files[0]) {
       setFile(e.target.files[0]);
       setError("");
-      setSuccess("");
     }
   };
 
-  const handleOnboarding = async () => {
+  const handleUpload = async () => {
     if (!file) {
-      setError("Please select a file first before uploading");
+      setError("Please select a file");
       return;
     }
 
-    setLoading(true);
+    setUploading(true);
     setError("");
-    setSuccess("");
 
     try {
       const formData = new FormData();
       formData.append("file", file);
-
-      console.log("Uploading file:", file.name);
 
       const response = await fetch("/api/cv/upload", {
         method: "POST",
         body: formData,
       });
 
-      console.log("Response status:", response.status);
-      console.log("Response headers:", response.headers);
-
-      // Check if response is JSON
-      const contentType = response.headers.get("content-type");
-      if (!contentType || !contentType.includes("application/json")) {
-        const text = await response.text();
-        console.error("Non-JSON response:", text.substring(0, 500));
-        throw new Error(
-          "Server returned non-JSON response. Check if FastAPI is running."
-        );
-      }
-
       const data = await response.json();
-      console.log("Response data:", data);
 
-      if (response.ok) {
-        setSuccess("Successfully uploaded and analyzed CV!");
-        console.log("CV Analysis:", data);
-
-        // Optionally complete onboarding after successful upload
-        // await completeOnboarding(true);
-        // router.push("/dashboard");
+      if (response.ok && data.success) {
+        // Fetch the full CV analysis
+        await checkForExistingCV();
       } else {
         throw new Error(data.error || "Failed to upload CV");
       }
-    } catch (e) {
-      console.error("Error uploading CV:", e);
-      setError(e instanceof Error ? e.message : "Unknown error occurred");
+    } catch (err) {
+      setError(err instanceof Error ? err.message : "Upload failed");
     } finally {
-      setLoading(false);
+      setUploading(false);
     }
   };
 
+  const handleCompleteOnboarding = async () => {
+    try {
+      const result = await completeOnboarding(true);
+
+      if (result.error) {
+        throw new Error(result.error);
+      }
+
+      // Will redirect via middleware
+      router.push("/");
+    } catch (err) {
+      console.error("Error completing onboarding:", err);
+      throw err;
+    }
+  };
+
+  // Loading state
+  if (step === "loading") {
+    return (
+      <div className="w-full h-screen flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+          <p className="text-gray-400">Loading...</p>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className="w-full h-screen flex items-center justify-center">
-      <div className="w-full h-fit max-w-3xl flex flex-col items-center justify-center">
-        <p className="text-8xl mb-4">🙋</p>
-        <h1 className="text-6xl font-bold mb-6">On-Boarding Page</h1>
-
-        <div className="w-full max-w-md">
-          {/* File Input */}
-          <input
-            type="file"
-            accept=".pdf"
-            onChange={handleFileChange}
-            disabled={loading}
-            className="mb-4 w-full"
-          />
-
-          {/* Show selected file */}
-          {file && (
-            <p className="mb-4 text-sm text-gray-400">
-              Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
-            </p>
-          )}
-
-          {/* Error Message */}
-          {error && (
-            <div className="mb-4 p-3 bg-red-900 text-red-200 rounded">
-              {error}
+    <div className="w-full min-h-screen flex items-center justify-center py-12 px-4">
+      <div className="w-full max-w-4xl">
+        {/* Progress Indicator */}
+        <div className="mb-8">
+          <div className="flex items-center justify-center">
+            <div
+              className={`flex items-center ${
+                step === "upload" ? "text-blue-500" : "text-green-500"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">
+                {step === "review" ? "✓" : "1"}
+              </div>
+              <span className="ml-2 font-medium">Upload CV</span>
             </div>
-          )}
 
-          {/* Success Message */}
-          {success && (
-            <div className="mb-4 p-3 bg-green-900 text-green-200 rounded">
-              {success}
+            <div className="w-24 h-0.5 bg-gray-700 mx-4"></div>
+
+            <div
+              className={`flex items-center ${
+                step === "review" ? "text-blue-500" : "text-gray-500"
+              }`}
+            >
+              <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">
+                2
+              </div>
+              <span className="ml-2 font-medium">Review Profile</span>
             </div>
-          )}
-
-          {/* Upload Button */}
-          <button
-            onClick={handleOnboarding}
-            disabled={!file || loading}
-            className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded"
-          >
-            {loading ? "Uploading..." : "Upload CV"}
-          </button>
-
-          {/* Debug Info */}
-          <div className="mt-4 p-3 bg-gray-800 rounded text-xs">
-            <p>Debug Info:</p>
-            <p>
-              FastAPI URL:{" "}
-              {process.env.FASTAPI_URL || "Not set (using default)"}
-            </p>
-            <p>API Endpoint: /api/cv/upload</p>
           </div>
         </div>
+
+        {/* Step 1: Upload CV */}
+        {step === "upload" && (
+          <div className="flex flex-col items-center">
+            <p className="text-6xl mb-4">📄</p>
+            <h1 className="text-4xl font-bold mb-4">Upload Your CV</h1>
+            <p className="text-gray-400 mb-8 text-center max-w-md">
+              Upload your CV and we&apos;ll automatically extract your skills,
+              experience, and qualifications using AI.
+            </p>
+
+            <div className="w-full max-w-md bg-gray-900 rounded-lg p-6">
+              <input
+                type="file"
+                accept=".pdf"
+                onChange={handleFileChange}
+                disabled={uploading}
+                className="w-full mb-4"
+              />
+
+              {file && (
+                <p className="mb-4 text-sm text-gray-400">
+                  Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
+                </p>
+              )}
+
+              {error && (
+                <div className="mb-4 p-3 bg-red-900/50 border border-red-500 rounded-md">
+                  <p className="text-red-200 text-sm">{error}</p>
+                </div>
+              )}
+
+              <button
+                onClick={handleUpload}
+                disabled={!file || uploading}
+                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
+              >
+                {uploading ? "Uploading & Analyzing..." : "Upload CV"}
+              </button>
+            </div>
+          </div>
+        )}
+
+        {/* Step 2: Review Profile */}
+        {step === "review" && cvAnalysis && (
+          <div className="flex flex-col items-center">
+            <OnboardingForm
+              cvAnalysis={cvAnalysis.analysisData}
+              onComplete={handleCompleteOnboarding}
+              setStep={setStep}
+            />
+          </div>
+        )}
       </div>
     </div>
   );
-};
-
-export default OnboardingPage;
+}
