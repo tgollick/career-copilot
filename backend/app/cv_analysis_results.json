@@ -14,85 +14,85 @@
   },
   "skills": {
     "programming_languages": [
-      "Typescript",
-      "C",
-      "Java",
       "Visual Basic",
-      "GO",
+      "Typescript",
       "Javascript",
-      "Python"
+      "Java",
+      "GO",
+      "Python",
+      "C"
     ],
     "frameworks_libraries": [
-      "Numpy",
-      "React",
-      "Redux",
-      "Tailwind",
       ".Net",
-      "Pandas",
+      "Redux",
       "Scikit-Learn",
+      "React",
+      "Pandas",
       "Next.Js",
-      "Node.Js"
+      "Tailwind",
+      "Node.Js",
+      "Numpy"
     ],
     "databases": [
       "Mongodb"
     ],
     "cloud_tools": [
-      "Github",
       "Git",
-      "Vercel"
+      "Vercel",
+      "Github"
     ],
     "other_skills": []
   },
   "entities": {
     "names": [
-      "Clarendon Grammar",
+      "COVID",
       "Atlas",
+      "Algorithms",
+      "linkedin.com/in/thomasgollick",
+      "Wren Healthcare",
       "Portfolio Website",
       "Markup",
       "Manchester Metropolitan 2021 - 2025",
-      "COVID",
-      "Wren Healthcare",
-      "linkedin.com/in/thomasgollick",
       "Node",
-      "Algorithms"
+      "Clarendon Grammar"
     ],
     "organizations": [
-      "AI",
-      "\u2022 Applied",
-      "GPT",
-      "Twitter Clone Built",
-      "\u2022 Completed",
-      "Programming Languages & Technologies",
-      "CSS",
-      "Next",
-      "Sanity",
-      "Software Development Processes, Mathematics for Computing,",
-      "Manchester Metropolitan University",
-      "\u2022 Ensureddailyupkeepandmaintenanceofrelevantsystemsandnetworkstoensureaslittledowntimeaspossible",
-      "A-Level Computer Science",
       "Pandas\nDevelopment & Collaboration Tools",
-      "Frameworks, Libraries & Tools",
-      "Visual Basic, C",
+      "Twitter Clone Built",
+      "A-Level Computer Science",
+      "GPT",
+      "\u2022 Demonstrated",
+      "Programming Languages & Technologies",
+      "GCSE",
+      "\u2022 Ensureddailyupkeepandmaintenanceofrelevantsystemsandnetworkstoensureaslittledowntimeaspossible",
+      "Data Structures",
       "Node",
       "CMS",
-      "GCSE",
-      "\u2022 Demonstrated",
       "\u2022 Developed",
+      "Sanity",
+      "AI",
+      "Visual Basic, C",
       "API",
-      "Data Structures"
+      "Software Development Processes, Mathematics for Computing,",
+      "Next",
+      "Frameworks, Libraries & Tools",
+      "\u2022 Applied",
+      "\u2022 Completed",
+      "Manchester Metropolitan University",
+      "CSS"
     ],
     "dates": [
-      "2015 - 2019",
       "March 2021 - July 2021",
+      "2015 - 2019",
       "734301"
     ],
     "locations": [
+      "London",
       "NoSQL",
       "UK",
-      "Chatham",
-      "London",
+      "Scikit",
       "React.js",
-      "Scikit"
+      "Chatham"
     ]
   },
   "experience_indicators": [],

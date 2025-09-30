@@ -20,6 +20,8 @@ const envSchema = z.object({
   DEEPSEEK_API_KEY: z
     .string()
     .min(1, "Please enter a API key for Deepseek Module"),
+
+  FASTAPI_URL: z.string().min(1, "Please provide a FastAPI url endpoint"),
 });
 
 // Validate environment variables
@@ -31,6 +33,7 @@ const parseEnv = () => {
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
+    FASTAPI_URL: process.env.FASTAPI_URL,
   });
 
   if (!parsed.success) {
