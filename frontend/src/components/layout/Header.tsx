@@ -47,7 +47,7 @@ const Header = () => {
             <button className="hover:cursor-pointer">Sign In</button>
           </SignInButton>
           <SignUpButton>
-            <button className="bg-[#6c47ff] text-ceramic-white rounded-full font-medium text-sm sm:text-base h-8 sm:h-10 px-2 sm:px-4 cursor-pointer ml-4">
+            <button className="bg-purple-500 text-ceramic-white rounded-full font-medium text-sm sm:text-base h-8 sm:h-10 px-2 sm:px-4 cursor-pointer ml-4">
               Sign Up
             </button>
           </SignUpButton>

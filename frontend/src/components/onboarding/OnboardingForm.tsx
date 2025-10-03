@@ -39,7 +39,6 @@ export default function OnboardingForm({
     frameworks: cvAnalysis.skills.frameworks_libraries.join(", "),
     databases: cvAnalysis.skills.databases.join(", "),
     cloudTools: cvAnalysis.skills.cloud_tools.join(", "),
-
     // Experience & Education
     objective: cvAnalysis.sections.objective || "",
     experienceLevel: cvAnalysis.experience_indicators[0] || "",
@@ -94,7 +93,7 @@ export default function OnboardingForm({
       }
 
       // Mark onboarding as complete
-      await onComplete();
+      onComplete();
 
       // Redirect to dashboard
       router.push("/");
@@ -110,11 +109,11 @@ export default function OnboardingForm({
 
   return (
     <form onSubmit={handleSubmit} className="w-full max-w-2xl">
-      <div className="bg-gray-900 rounded-lg p-8 space-y-6">
+      <div className="bg-neutral-900 rounded-lg p-8 space-y-6">
         {/* Header */}
         <div className="text-center mb-6">
           <h2 className="text-3xl font-bold mb-2">Review Your Profile</h2>
-          <p className="text-gray-400">
+          <p className="text-neutral-400">
             We&apos;ve pre-filled your information from your CV. Please review
             and make any necessary changes.
           </p>
@@ -129,7 +128,7 @@ export default function OnboardingForm({
 
         {/* Personal Information Section */}
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-blue-400">
+          <h3 className="text-xl font-semibold text-white">
             Personal Information
           </h3>
 
@@ -143,7 +142,7 @@ export default function OnboardingForm({
               value={formData.fullName}
               onChange={handleChange}
               required
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -158,7 +157,7 @@ export default function OnboardingForm({
                 value={formData.email}
                 onChange={handleChange}
                 required
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -169,7 +168,7 @@ export default function OnboardingForm({
                 name="phone"
                 value={formData.phone}
                 onChange={handleChange}
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -183,7 +182,7 @@ export default function OnboardingForm({
                 value={formData.linkedin}
                 onChange={handleChange}
                 placeholder="linkedin.com/in/yourprofile"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -195,7 +194,7 @@ export default function OnboardingForm({
                 value={formData.github}
                 onChange={handleChange}
                 placeholder="github.com/yourusername"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -208,14 +207,14 @@ export default function OnboardingForm({
               value={formData.location}
               onChange={handleChange}
               placeholder="City, Country"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
 
         {/* Skills Section */}
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-blue-400">
+          <h3 className="text-xl font-semibold text-white">
             Technical Skills
           </h3>
           <p className="text-sm text-gray-400">
@@ -232,7 +231,7 @@ export default function OnboardingForm({
               value={formData.programmingLanguages}
               onChange={handleChange}
               placeholder="Python, JavaScript, TypeScript"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -246,7 +245,7 @@ export default function OnboardingForm({
               value={formData.frameworks}
               onChange={handleChange}
               placeholder="React, Node.js, Django"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -261,7 +260,7 @@ export default function OnboardingForm({
                 value={formData.databases}
                 onChange={handleChange}
                 placeholder="PostgreSQL, MongoDB"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
 
@@ -275,7 +274,7 @@ export default function OnboardingForm({
                 value={formData.cloudTools}
                 onChange={handleChange}
                 placeholder="AWS, Docker, Git"
-                className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
             </div>
           </div>
@@ -283,7 +282,7 @@ export default function OnboardingForm({
 
         {/* Professional Summary Section */}
         <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-blue-400">
+          <h3 className="text-xl font-semibold text-white">
             Professional Profile
           </h3>
 
@@ -297,7 +296,7 @@ export default function OnboardingForm({
               onChange={handleChange}
               rows={4}
               placeholder="Brief description of your professional background and career goals"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -311,7 +310,7 @@ export default function OnboardingForm({
               value={formData.experienceLevel}
               onChange={handleChange}
               placeholder="e.g., 3+ years of experience"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
 
@@ -325,7 +324,7 @@ export default function OnboardingForm({
               value={formData.education}
               onChange={handleChange}
               placeholder="e.g., BSc Computer Science"
-              className="w-full px-4 py-2 bg-gray-800 border border-gray-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
             />
           </div>
         </div>
@@ -336,7 +335,7 @@ export default function OnboardingForm({
             type="button"
             onClick={() => setStep("upload")}
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-gray-700 hover:bg-gray-600 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             Back
           </button>
@@ -344,14 +343,14 @@ export default function OnboardingForm({
           <button
             type="submit"
             disabled={loading}
-            className="flex-1 px-6 py-3 bg-blue-600 hover:bg-blue-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+            className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
           >
             {loading ? "Completing..." : "Complete Onboarding"}
           </button>
         </div>
 
         {/* Privacy Note */}
-        <p className="text-xs text-gray-500 text-center mt-4">
+        <p className="text-xs text-neutral-500 text-center mt-4">
           By completing onboarding, you agree to our Terms of Service and
           Privacy Policy. Your data is securely stored and never shared without
           your permission.

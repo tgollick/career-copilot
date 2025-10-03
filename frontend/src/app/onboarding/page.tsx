@@ -102,8 +102,8 @@ export default function OnboardingPage() {
   if (step === "loading") {
     return (
       <div className="w-full h-screen flex items-center justify-center">
-        <div className="text-center">
-          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500 mx-auto mb-4"></div>
+        <div className="text-center" >
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-purple-500 mx-auto mb-4"></div>
           <p className="text-gray-400">Loading...</p>
         </div>
       </div>
@@ -118,7 +118,7 @@ export default function OnboardingPage() {
           <div className="flex items-center justify-center">
             <div
               className={`flex items-center ${
-                step === "upload" ? "text-blue-500" : "text-green-500"
+                step === "upload" ? "text-purple-500" : "text-green-500"
               }`}
             >
               <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">
@@ -131,7 +131,7 @@ export default function OnboardingPage() {
 
             <div
               className={`flex items-center ${
-                step === "review" ? "text-blue-500" : "text-gray-500"
+                step === "review" ? "text-purple-500" : "text-gray-500"
               }`}
             >
               <div className="w-8 h-8 rounded-full border-2 flex items-center justify-center font-bold">
@@ -152,17 +152,17 @@ export default function OnboardingPage() {
               experience, and qualifications using AI.
             </p>
 
-            <div className="w-full max-w-md bg-gray-900 rounded-lg p-6">
+            <div className="w-full max-w-md bg-neutral-900 rounded-lg p-6">
               <input
                 type="file"
                 accept=".pdf"
                 onChange={handleFileChange}
                 disabled={uploading}
-                className="w-full mb-4"
+                className="w-full mb-4 bg-neutral-800 rounded-sm p-2"
               />
 
               {file && (
-                <p className="mb-4 text-sm text-gray-400">
+                <p className="mb-4 text-sm p-2 rounded-sm bg-neutral-800">
                   Selected: {file.name} ({(file.size / 1024).toFixed(2)} KB)
                 </p>
               )}
@@ -176,7 +176,7 @@ export default function OnboardingPage() {
               <button
                 onClick={handleUpload}
                 disabled={!file || uploading}
-                className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
+                className="w-full py-3 px-4 bg-purple-600 hover:bg-purple-700 disabled:opacity-50 disabled:cursor-not-allowed rounded-md font-semibold transition-colors"
               >
                 {uploading ? "Uploading & Analyzing..." : "Upload CV"}
               </button>
