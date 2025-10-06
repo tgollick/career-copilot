@@ -12,23 +12,23 @@ const Filters = (props: Props) => {
     <div className="p-4 rounded-md bg-neutral-900 mb-4">
       <div className="flex flex-col mb-2">
         <label htmlFor="searchTerm">Search...</label>
-        <input type="input" id="searchTerm" placeholder="Machine learning" className="p-2 bg-neutral-800 rounded-sm"/>
+        <input type="input" onChange={(e) => props.handleSearch(e.target.value)} id="searchTerm" placeholder="Machine learning" className="p-2 bg-neutral-800 rounded-sm"/>
       </div>
 
       <div className="flex w-full gap-2">
         <div className="w-full">
           <label htmlFor="location">Location</label>
-          <input type="input" id="location" placeholder="Manchester" className="p-2 w-full bg-neutral-800 rounded-sm"/>
+          <input type="input" onChange={(e) => props.handleLocation(e.target.value)} id="location" placeholder="Manchester" className="p-2 w-full bg-neutral-800 rounded-sm"/>
         </div>
 
         <div>
           <label htmlFor="minSalary">Minimum Salary</label>
-          <input type="number" id="minSalary" className="p-2 bg-neutral-800 rounded-sm"/>
+          <input type="number" onChange={(e) => props.handleMinSalary(parseInt(e.target.value))} id="minSalary" className="p-2 bg-neutral-800 rounded-sm"/>
         </div>
 
         <div>
           <label htmlFor="maxSalary">Maximum Salary</label>
-          <input type="number" id="maxSalary" className="p-2 bg-neutral-800 rounded-sm"/>
+          <input type="number" onChange={(e) => props.handleMaxSalary(parseInt(e.target.value))} id="maxSalary" className="p-2 bg-neutral-800 rounded-sm"/>
         </div>
       </div>
     </div>

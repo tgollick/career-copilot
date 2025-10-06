@@ -12,6 +12,11 @@ type Props = {
   isAuthed: boolean;
 };
 
+// TO DO 
+// - Fix pagination page count when filters are added
+// - Fix no. result displayed at top (again pagniation component related me thinks)
+// - Get claude to give it all a once over
+
 const JobBoard = (props: Props) => {
   const [jobs, setJobs] = useState<Job[]>(props.initialJobs);
   const [currentPage, setCurrentPage] = useState(1);
@@ -65,29 +70,37 @@ const JobBoard = (props: Props) => {
     }
   };
 
+  // Debounced effect - only fires 500ms after user stops typing
+  useEffect(() => {
+    const timeoutId = setTimeout(() => {
+      fetchJobs(1, { location, searchTerm, minSalary, maxSalary });
+    }, 1000); // 500ms delay (adjust as needed)
+
+    // Cleanup function - cancels the previous timeout
+    return () => clearTimeout(timeoutId);
+  }, [location, searchTerm, minSalary, maxSalary]);
+
+  // Handlers now just update state (no API calls)
   const handleLocationChange = (newLocation: string) => {
     setLocation(newLocation);
-    fetchJobs(1, { location: newLocation, searchTerm, minSalary, maxSalary });
   };
 
   const handleSearchTermChange = (newSearchTerm: string) => {
     setSearchTerm(newSearchTerm);
-    fetchJobs(1, { location, searchTerm: newSearchTerm, minSalary, maxSalary });
   };
 
   const handleMinSalaryChange = (newMinSalary: number) => {
     setMinSalary(newMinSalary);
-    fetchJobs(1, { location, searchTerm, minSalary: newMinSalary, maxSalary });
   };
 
   const handleMaxSalaryChange = (newMaxSalary: number) => {
     setMaxSalary(newMaxSalary);
-    fetchJobs(1, { location, searchTerm, minSalary, maxSalary: newMaxSalary });
   };
 
   const handlePageChange = (page: number) => {
     fetchJobs(page, { location, searchTerm, minSalary, maxSalary });
   };
+
   useEffect(() => {
     fetchJobs(1);
   }, []);
