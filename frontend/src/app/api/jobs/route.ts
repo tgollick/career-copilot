@@ -53,7 +53,8 @@ export async function GET(request: Request) {
 
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)::int` })
-      .from(jobs);
+      .from(jobs)
+      .where(conditions.length > 0 ? and(...conditions) : undefined);
 
     const totalPages = Math.ceil(count / validLimit);
 

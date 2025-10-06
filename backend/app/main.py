@@ -151,11 +151,10 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import tempfile
 import os
-from pathlib import Path
 
-from app.ml.cv_parser import extract_cv_text
-from app.ml.cv_analysis import CVAnalyser
-from app.ml.exceptions import CVAnalysisError, PDFPassingError, InsufficientDataError
+from ml.cv_parser import extract_cv_text
+from ml.cv_analysis import CVAnalyser
+from ml.exceptions import CVAnalysisError, PDFPassingError, InsufficientDataError
 
 app = FastAPI(
     title="Career Co-Pilot CV Analysis API",
