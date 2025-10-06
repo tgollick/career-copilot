@@ -5,6 +5,7 @@ import { type Job } from "@/db/schema";
 import { type PaginationInfo } from "@/lib/types";
 import Pagination from "./Pagination";
 import { SpinnerCircularSplit } from "spinners-react";
+import Filters from "./Filters";
 
 type Props = {
   initialJobs: Job[];
@@ -22,19 +23,40 @@ const JobBoard = (props: Props) => {
     hasNextPage: false,
     hasPreviousPage: false,
   });
+  const [location, setLocation] = useState<string>("");
+  const [searchTerm, setSearchTerm] = useState<string>("");
+  const [minSalary, setMinSalary] = useState<number>(0);
+  const [maxSalary, setMaxSalary] = useState<number>(0);
   const [loading, setLoading] = useState(false);
 
-  const fetchJobs = async (page: number) => {
+  const fetchJobs = async (
+    page: number,
+    filters?: {
+      location?: string;
+      searchTerm?: string;
+      minSalary?: number;
+      maxSalary?: number;
+    }
+  ) => {
     try {
       setLoading(true);
-
-      const response = await fetch(`/api/jobs?page=${page}&limit=15`);
+      
+      // Build query string
+      const params = new URLSearchParams({
+        page: page.toString(),
+        limit: "15",
+      });
+      
+      if (filters?.location) params.append("location", filters.location);
+      if (filters?.searchTerm) params.append("searchTerm", filters.searchTerm);
+      if (filters?.minSalary) params.append("minSalary", filters.minSalary.toString());
+      if (filters?.maxSalary) params.append("maxSalary", filters.maxSalary.toString());
+      
+      const response = await fetch(`/api/jobs?${params.toString()}`);
       const data = await response.json();
-
       setJobs(data.jobs);
       setPagination(data.pagination);
       setCurrentPage(page);
-
       window.scrollTo({ top: 0, behavior: "smooth" });
     } catch (e) {
       console.error("Error fetching jobs: ", e);
@@ -43,16 +65,37 @@ const JobBoard = (props: Props) => {
     }
   };
 
-  const handlePageChange = (page: number) => {
-    fetchJobs(page);
+  const handleLocationChange = (newLocation: string) => {
+    setLocation(newLocation);
+    fetchJobs(1, { location: newLocation, searchTerm, minSalary, maxSalary });
   };
 
+  const handleSearchTermChange = (newSearchTerm: string) => {
+    setSearchTerm(newSearchTerm);
+    fetchJobs(1, { location, searchTerm: newSearchTerm, minSalary, maxSalary });
+  };
+
+  const handleMinSalaryChange = (newMinSalary: number) => {
+    setMinSalary(newMinSalary);
+    fetchJobs(1, { location, searchTerm, minSalary: newMinSalary, maxSalary });
+  };
+
+  const handleMaxSalaryChange = (newMaxSalary: number) => {
+    setMaxSalary(newMaxSalary);
+    fetchJobs(1, { location, searchTerm, minSalary, maxSalary: newMaxSalary });
+  };
+
+  const handlePageChange = (page: number) => {
+    fetchJobs(page, { location, searchTerm, minSalary, maxSalary });
+  };
   useEffect(() => {
     fetchJobs(1);
   }, []);
 
   return (
     <div className="w-full">
+      <Filters handleSearch={handleSearchTermChange} handleLocation={handleLocationChange} handleMinSalary={handleMinSalaryChange} handleMaxSalary={handleMaxSalaryChange}/>
+
       {/* Loading State */}
       {loading && (
         <div className="flex justify-center items-center py-20">
