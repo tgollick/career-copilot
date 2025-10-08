@@ -75,7 +75,7 @@ const ProfilePage = async () => {
               <div className="space-y-2">
                 <h3 className="font-semibold">Top Matches:</h3>
                 {existingSimilarities.map((sim) => (
-                  <div key={sim.id} className="flex justify-between p-3 bg-gray-50 rounded">
+                  <div key={sim.id} className="flex justify-between p-3 bg-neutral-800 rounded">
                     <span>{sim.job.title}</span>
                     <span className="font-semibold">{sim.matchQuality}</span>
                   </div>
