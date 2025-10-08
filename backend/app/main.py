@@ -151,8 +151,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 import tempfile
 import os
+from pydantic import BaseModel
+from typing import Dict, List
+from ml.balance_cv_weight import balance_cv_weights
 
-from ml.tfidf import TFIDFFromScratch
+from ml.tfidf import TFIDFFromScratch, calculate_similarity_results
 from ml.cv_parser import extract_cv_text
 from ml.cv_analysis import CVAnalyser
 from ml.exceptions import CVAnalysisError, PDFPassingError, InsufficientDataError
@@ -294,22 +297,68 @@ async def analyze_cv(file: UploadFile = File(...)):
             detail=f"Unexpected error processing CV: {str(e)}"
         )
 
+"""
+Request + response + JobMatchResult classes for /match-job endpoint so the FastAPI
+endpoint knows what the request and response should look like
+"""
+class MatchJobRequest(BaseModel):
+    cv_analysis: Dict
+    job_descriptions: List[str]
+
+class JobMatchResult(BaseModel):
+    job_index: int
+    similarity: float
+    match_quality: str
+
+class MatchJobResponse(BaseModel):
+    success: bool
+    results: List[JobMatchResult]
+
 @app.post("/api/match-job")
-async def generate_similarity(cv_analysis, job_descriptions):
-    
-    # Pre-process the job descriptions
+async def generate_similarity(request: MatchJobRequest):
+    """
+    Match job endpoint for users who have analysed their CV to get
+    cosine similarity results to each role based on TF-IDF class built from scratch
+    to better understand the underlying logic (although I am very aware vectorisation using
+    numpy would have been much faster!)
+    """
+    try:
+        if not request.job_descriptions:
+            raise HTTPException(
+                    status_code=400,
+                    detail="No job descriptions were provided in the request"
+                    )
 
-    # Then weight the cv_analysis results
+        if not request.cv_analysis:
+            raise HTTPException(
+                    status_code=400,
+                    detail="No CV analysis provided in the request"
+                    )
 
-    # Add them both together into an array with the weighted_cv as the 0 index
+        weighted_cv_text = balance_cv_weights(request.cv_analysis)
 
-    # Run through "test_similarity" function which calculates the TF-IDF matrix 
+        all_documents = [weighted_cv_text] + request.job_descriptions
 
-    # Then calcualtes the cosine similarity between the matrix'
+        results, vocabulary, tfidf_matrix = calculate_similarity_results(all_documents)
 
-    # Return the array of similarity alongside the jobs ID for refrence when hitting next.js route
+        job_results = [
+            JobMatchResult(
+                job_index=result.job_index,
+                similarity=float(result.similarity),
+                match_quality=result.match_quality
+                ) for result in results
+        ]
 
-    return ""
+        return MatchJobResponse(
+                success=True,
+                results=job_results
+                )
+
+    except Exception as e:
+        raise HTTPException(
+                status_code=500,
+                detail=f"Error calcualting similarity results: {str(e)}"
+                )
 
 if __name__ == "__main__":
     import uvicorn

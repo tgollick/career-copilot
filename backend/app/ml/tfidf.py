@@ -237,25 +237,69 @@ def display_similarity_results(results, tfidf_vocabulary, tfidf_matrix):
                 print(f"     • {word}: {contribution:.4f}")
 
 def calculate_similarity_results(all_documents):
-    # Calculate TF-IDF using our implementation
+    """
+    Calculate TF-IDF and cosine similarities using from-scratch implementation.
+    Optionally uses threading for concurrent similarity calculations.
+    """
+
     tfidf = TFIDFFromScratch()
     tfidf_matrix = tfidf.calculate_tfidf(all_documents)
     
-    # Extract job descriptions (all except first document which is CV)
+    cv_vector = tfidf_matrix[0]
     job_descriptions = all_documents[1:]
     
+    # For small batches, sequential is fine
+    if len(job_descriptions) < 20:
+        results = _calculate_sequential(cv_vector, tfidf_matrix, job_descriptions)
+    else:
+        # For larger batches, use threading  
+        results = _calculate_parallel(cv_vector, tfidf_matrix, job_descriptions)
+    
+    return results, tfidf.vocabulary, tfidf_matrix
+
+
+def _calculate_sequential(cv_vector, tfidf_matrix, job_descriptions):
+    """
+    Sequential calculation for smaller job batches, not worth the overhead
+    """
     results = []
 
-    # Calculate similarity between CV and each job
     for i, job in enumerate(job_descriptions, 1):
-        similarity = calculate_cosine_similarity(tfidf_matrix[0], tfidf_matrix[i])
+        similarity = calculate_cosine_similarity(cv_vector, tfidf_matrix[i])
+        match_quality = get_similarity_description(similarity)
+        results.append(JobMatchResult(i, similarity, job, match_quality))
 
-        # Store results
-        result = JobMatchResult(i, similarity, job, get_similarity_description(similarity))
+    return results
 
-        results.append(result)
 
-    return results, tfidf.vocabulary, tfidf_matrix
+def _calculate_parallel(cv_vector, tfidf_matrix, job_descriptions, max_workers=4):
+    """
+    Parallel calculation using ThreadPoolExecutor.
+    Still uses from-scratch cosine_similarity function, just runs multiple at once.
+    """
+
+    from concurrent.futures import ThreadPoolExecutor, as_completed
+    
+    results = []
+    
+    with ThreadPoolExecutor(max_workers=max_workers) as executor:
+        # Submit jobs to thread pool 
+        future_to_index = {
+            executor.submit(calculate_cosine_similarity, cv_vector, tfidf_matrix[i+1]): (i+1, job_descriptions[i])
+            for i in range(len(job_descriptions))
+        }
+        
+        # Collect results
+        for future in as_completed(future_to_index):
+            job_index, job_desc = future_to_index[future]
+            similarity = future.result()
+            match_quality = get_similarity_description(similarity)
+            results.append(JobMatchResult(job_index, similarity, job_desc, match_quality))
+    
+    # Maintain order, important for Next.JS route
+    results.sort(key=lambda x: x.job_index)
+
+    return results
 
 def test_similarity(all_documents, print_results=False):
     """

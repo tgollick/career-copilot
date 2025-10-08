@@ -1,0 +1,39 @@
+{
+  "cv_analysis": {
+    "contact_info": {
+      "email": "thomasgollick@gmail.com",
+      "phone": "",
+      "linkedin": "linkedin.com/in/thomasgollick",
+      "github": "github.com/tgollick"
+    },
+    "sections": {
+      "objective": "Final year Computer Science student at Manchester Metropolitan University projected to achieve a 1st class degree. Keen interests in full-stack development, artificial intelligence and machine learning. Seeking graduate roles to help expand my knowledge and gain valuable experience as a developer.",
+      "education": "GCSE and A-Level Computer Science, Chatham and Clarendon Grammar School 2015 - 2019\nBSc (Hons) Computer Science, Manchester Metropolitan 2021 - 2025",
+      "skills": "Programming Languages & Technologies: C#, Java, Python, JavaScript, TypeScript, Visual Basic, C, Go\nFrameworks, Libraries & Tools: Node.js, React.js, Next.js, Redux, Scikit-learn, Numpy, Pandas",
+      "projects": "AI CV Generator. Built a CV generator site using AI by using React.JS, Node.JS, Tailwind CSS and Open AI's GPT 3.5 Model API.",
+      "experience": "IT Technician March 2021 - July 2021\nWren Healthcare Sandwich, Kent"
+    },
+    "skills": {
+      "programming_languages": ["Visual Basic", "Typescript", "Javascript", "Java", "GO", "Python", "C"],
+      "frameworks_libraries": [".Net", "Redux", "Scikit-Learn", "React", "Pandas", "Next.Js", "Tailwind", "Node.Js", "Numpy"],
+      "databases": ["Mongodb"],
+      "cloud_tools": ["Git", "Vercel", "Github"],
+      "other_skills": []
+    },
+    "entities": {
+      "names": ["COVID", "Atlas"],
+      "organizations": ["Manchester Metropolitan University"],
+      "dates": ["March 2021 - July 2021"],
+      "locations": ["UK"]
+    },
+    "experience_indicators": [],
+    "education_info": ["BSc", "University", "School", "GCSE"]
+  },
+  "job_descriptions": [
+    "Full Stack Developer needed. Must have React, Node.js, and JavaScript experience. TypeScript knowledge preferred. We are building modern web applications using Next.js and MongoDB. Ideal for recent graduates with strong full-stack skills.",
+    "Machine Learning Engineer position. Required skills: Python, Scikit-learn, Numpy, Pandas. Experience with data analysis and AI models essential. Graduate role available for candidates with academic ML background.",
+    "Frontend Developer role. React.js and TypeScript required. Experience with Next.js, Tailwind CSS, and modern JavaScript frameworks. Looking for developer passionate about user interfaces and component design.",
+    "Backend Engineer needed. Node.js and database experience required. MongoDB or other NoSQL databases preferred. API development and RESTful services experience essential.",
+    "Junior Software Developer. Python or Java required. Experience with Git, agile methodologies, and team collaboration. Recent computer science graduates encouraged to apply. Training provided."
+  ]
+}
