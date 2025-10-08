@@ -152,6 +152,7 @@ from fastapi.responses import JSONResponse
 import tempfile
 import os
 
+from ml.tfidf import TFIDFFromScratch
 from ml.cv_parser import extract_cv_text
 from ml.cv_analysis import CVAnalyser
 from ml.exceptions import CVAnalysisError, PDFPassingError, InsufficientDataError
@@ -176,6 +177,7 @@ app.add_middleware(
 
 # Initialize CV analyser (singleton pattern)
 cv_analyser = CVAnalyser()
+tfidf = TFIDFFromScratch()
 
 @app.get("/")
 async def root():
@@ -291,6 +293,23 @@ async def analyze_cv(file: UploadFile = File(...)):
             status_code=500,
             detail=f"Unexpected error processing CV: {str(e)}"
         )
+
+@app.post("/api/match-job")
+async def generate_similarity(cv_analysis, job_descriptions):
+    
+    # Pre-process the job descriptions
+
+    # Then weight the cv_analysis results
+
+    # Add them both together into an array with the weighted_cv as the 0 index
+
+    # Run through "test_similarity" function which calculates the TF-IDF matrix 
+
+    # Then calcualtes the cosine similarity between the matrix'
+
+    # Return the array of similarity alongside the jobs ID for refrence when hitting next.js route
+
+    return ""
 
 if __name__ == "__main__":
     import uvicorn
