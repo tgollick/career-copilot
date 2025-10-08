@@ -8,6 +8,8 @@ import {
   timestamp,
   pgEnum,
   json,
+  decimal,
+  uniqueIndex,
 } from "drizzle-orm/pg-core";
 import { relations } from "drizzle-orm";
 
@@ -188,26 +190,57 @@ export const users = pgTable("users", {
   updatedAt: timestamp("updated_at").defaultNow().notNull(),
 });
 
-// Relations
+// Job Similarities Table
+export const jobSimilarities = pgTable("job_similarities", {
+  id: serial("id").primaryKey(),
+  userId: varchar("user_id", { length: 255 }).notNull().references(() => users.id, { onDelete: "cascade" }), // ← Changed to varchar
+  jobId: integer("job_id").notNull().references(() => jobs.id, { onDelete: "cascade" }), // ← Changed to integer
+  similarity: decimal("similarity", { precision: 5, scale: 4 }).notNull(),
+  matchQuality: varchar("match_quality", { length: 50 }).notNull(),
+  createdAt: timestamp("created_at").defaultNow().notNull(),
+}, (table) => {
+  return {
+    userJobUnique: uniqueIndex("user_job_unique").on(table.userId, table.jobId),
+  };
+});
+
+// Job Similarities Relations
+export const jobSimilaritiesRelations = relations(jobSimilarities, ({ one }) => ({
+  user: one(users, {
+    fields: [jobSimilarities.userId],
+    references: [users.id],
+  }),
+  job: one(jobs, {
+    fields: [jobSimilarities.jobId],
+    references: [jobs.id],
+  }),
+}));
+
+// Companies Relations
 export const companiesRelations = relations(companies, ({ many }) => ({
   jobs: many(jobs),
 }));
 
-export const jobsRelations = relations(jobs, ({ one }) => ({
+// Jobs Relations - FIXED
+export const jobsRelations = relations(jobs, ({ one, many }) => ({
   company: one(companies, {
     fields: [jobs.companyId],
     references: [companies.id],
   }),
+  jobSimilarities: many(jobSimilarities),
 }));
 
+// Users Relations
 export const usersRelations = relations(users, ({ many, one }) => ({
   cvAnalyses: many(cvAnalyses),
   activeCv: one(cvAnalyses, {
     fields: [users.activeCvId],
     references: [cvAnalyses.id],
   }),
+  jobSimilarities: many(jobSimilarities),
 }));
 
+// CV Analyses Relations
 export const cvAnalysesRelations = relations(cvAnalyses, ({ one }) => ({
   user: one(users, {
     fields: [cvAnalyses.userId],
@@ -224,3 +257,5 @@ export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
 export type CvAnalysis = typeof cvAnalyses.$inferSelect;
 export type NewCvAnalysis = typeof cvAnalyses.$inferInsert;
+export type JobSimilarities = typeof jobSimilarities.$inferSelect;
+export type NewJobSimilarities = typeof jobSimilarities.$inferInsert;

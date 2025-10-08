@@ -337,6 +337,13 @@ async def generate_similarity(request: MatchJobRequest):
 
         weighted_cv_text = balance_cv_weights(request.cv_analysis)
 
+        # DEBUG: Check CV length
+        print(f"[DEBUG] Weighted CV length: {len(weighted_cv_text)} characters")
+        print(f"[DEBUG] Weighted CV preview: {weighted_cv_text[:200]}...")
+        
+        # DEBUG: Check job count
+        print(f"[DEBUG] Number of jobs: {len(request.job_descriptions)}")
+
         all_documents = [weighted_cv_text] + request.job_descriptions
 
         results, vocabulary, tfidf_matrix = calculate_similarity_results(all_documents)

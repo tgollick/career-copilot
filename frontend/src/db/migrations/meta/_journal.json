@@ -8,6 +8,27 @@
       "when": 1759221355617,
       "tag": "0000_lucky_arachne",
       "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1759938687260,
+      "tag": "0001_heavy_aqueduct",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759938884483,
+      "tag": "0002_magenta_sugar_man",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759939267328,
+      "tag": "0003_silly_timeslip",
+      "breakpoints": true
     }
   ]
 }
