@@ -11,7 +11,8 @@ import {
   decimal,
   uniqueIndex,
 } from "drizzle-orm/pg-core";
-import { relations } from "drizzle-orm";
+import { relations, InferSelectModel } from "drizzle-orm";
+import { JobWithSimilarityExplicit } from "@/lib/types";
 
 // Enums for better type safety
 export const companySizeEnum = pgEnum("company_size", [
@@ -251,7 +252,6 @@ export const cvAnalysesRelations = relations(cvAnalyses, ({ one }) => ({
 // Type exports for TypeScript
 export type Company = typeof companies.$inferSelect;
 export type NewCompany = typeof companies.$inferInsert;
-export type Job = typeof jobs.$inferSelect;
 export type NewJob = typeof jobs.$inferInsert;
 export type User = typeof users.$inferSelect;
 export type NewUser = typeof users.$inferInsert;
@@ -259,3 +259,25 @@ export type CvAnalysis = typeof cvAnalyses.$inferSelect;
 export type NewCvAnalysis = typeof cvAnalyses.$inferInsert;
 export type JobSimilarities = typeof jobSimilarities.$inferSelect;
 export type NewJobSimilarities = typeof jobSimilarities.$inferInsert;
+
+// Base job type inferred from schema
+export type Job = InferSelectModel<typeof jobs>;
+
+// Job with optional similarity data (for API responses)
+export type JobWithSimilarity = Job & {
+  similarity: string | null;
+  matchQuality: string | null;
+};
+
+// Complete API response type
+export type JobsApiResponse = {
+  jobs: JobWithSimilarity[];
+  pagination: {
+    currentPage: number;
+    totalPages: number;
+    totalItems: number;
+    itemsPerPage: number;
+    hasNextPage: boolean;
+    hasPreviousPage: boolean;
+  };
+};

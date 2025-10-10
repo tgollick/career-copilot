@@ -1,20 +1,20 @@
 "use client";
 
 import React, { useState } from "react";
-import { type Job } from "@/db/schema";
+import { JobWithSimilarity, type Job } from "@/db/schema";
 import { SpinnerCircularSplit } from "spinners-react";
 import { CoverLetterDocument } from "./CoverLetterDocument";
 import { pdf } from "@react-pdf/renderer";
 
 type Props = {
-  job: Job;
+  job: JobWithSimilarity;
   isAuthed: boolean;
 };
 
 const JobTile = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
 
-  const getCoverLetter = async (job: Job) => {
+  const getCoverLetter = async (job: JobWithSimilarity) => {
     try {
       setLoading(true);
 

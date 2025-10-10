@@ -40,3 +40,31 @@ export type PaginationInfo = {
   hasNextPage: boolean;
   hasPreviousPage: boolean;
 };
+
+// FIXED: Updated to match actual database schema with nullable fields
+export type JobWithSimilarityExplicit = {
+  // Job fields
+  id: number;
+  title: string;
+  description: string;
+  location: string | null; // ← Fixed: was string, now string | null
+  remoteType: string | null;
+  salaryMin: number | null;
+  salaryMax: number | null;
+  employmentType: string | null;
+  experienceLevel: string | null;
+  skills: string[] | null;
+  requirements: string[] | null;
+  postedAt: Date;
+  companyId: number;
+  
+  // Similarity fields (nullable)
+  similarity: string | null;
+  matchQuality: string | null;
+};
+
+// API Response type
+export type JobsApiResponse = {
+  jobs: JobWithSimilarityExplicit[];
+  pagination: PaginationInfo;
+};

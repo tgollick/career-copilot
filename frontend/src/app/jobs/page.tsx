@@ -1,12 +1,13 @@
 import JobBoard from "@/components/jobs/JobBoard";
-import { jobs, type Job } from "@/db/schema";
+import { jobs } from "@/db/schema";
 import { db } from "@/lib";
+import { JobWithSimilarityExplicit } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 // type Props = {}
 
 const JobsPage = async () => {
-  const initialJobs: Job[] = await db.select().from(jobs).limit(15);
+  const initialJobs: JobWithSimilarityExplicit[] = await db.select().from(jobs).limit(15);
   const { isAuthenticated } = await auth();
 
   return (

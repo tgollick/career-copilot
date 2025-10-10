@@ -1,8 +1,8 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import JobTile from "./JobTile";
-import { type Job } from "@/db/schema";
-import { type PaginationInfo } from "@/lib/types";
+import { JobWithSimilarity, type Job } from "@/db/schema";
+import { JobsApiResponse, type PaginationInfo } from "@/lib/types";
 import Pagination from "./Pagination";
 import { SpinnerCircularSplit } from "spinners-react";
 import Filters from "./Filters";
@@ -18,7 +18,7 @@ type Props = {
 // - Get claude to give it all a once over
 
 const JobBoard = (props: Props) => {
-  const [jobs, setJobs] = useState<Job[]>(props.initialJobs);
+  const [jobs, setJobs] = useState<JobWithSimilarity[]>(props.initialJobs);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
