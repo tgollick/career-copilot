@@ -8,7 +8,7 @@ import { SpinnerCircularSplit } from "spinners-react";
 import Filters from "./Filters";
 
 type Props = {
-  initialJobs: Job[];
+  initialJobs: JobWithSimilarity[];
   isAuthed: boolean;
 };
 

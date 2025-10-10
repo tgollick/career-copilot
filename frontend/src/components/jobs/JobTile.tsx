@@ -14,6 +14,25 @@ type Props = {
 const JobTile = (props: Props) => {
   const [loading, setLoading] = useState<boolean>(false);
 
+  const getMatchStyles = (matchQuality: string | null) => {
+    switch (matchQuality) {
+      case "Excellent Match":
+        return "bg-gradient-to-br from-green-400 to-emerald-500 text-white border-green-300 shadow-lg";
+      case "Strong Match":
+        return "bg-gradient-to-br from-blue-400 to-indigo-500 text-white border-blue-300 shadow-lg";
+      case "Good Match":
+        return "bg-gradient-to-br from-violet-400 to-purple-500 text-white border-violet-300 shadow-lg";
+      case "Moderate Match":
+        return "bg-gradient-to-br from-yellow-400 to-amber-500 text-white border-yellow-300 shadow-lg";
+      case "Weak Match":
+        return "bg-gradient-to-br from-orange-400 to-red-400 text-white border-orange-300 shadow-lg";
+      case "No Match":
+        return "bg-gradient-to-br from-red-400 to-rose-500 text-white border-red-300 shadow-lg";
+      default:
+        return "bg-gradient-to-br from-gray-400 to-slate-500 text-white border-gray-300 shadow-lg";
+    }
+  };
+
   const getCoverLetter = async (job: JobWithSimilarity) => {
     try {
       setLoading(true);
@@ -23,7 +42,7 @@ const JobTile = (props: Props) => {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ job }), // wrap job in an object
+        body: JSON.stringify({ job }),
       });
 
       if (!res.ok) {
@@ -65,6 +84,11 @@ const JobTile = (props: Props) => {
     window.open(url, "_blank");
   };
 
+  const similarity = props.job.similarity 
+    ? Math.round(parseFloat(props.job.similarity) * 100) 
+    : 0;
+  const matchQuality = props.job.matchQuality ?? "Unknown";
+
   return (
     <div className="bg-neutral-900 p-4 rounded-md flex flex-col mb-4">
       <div className="flex gap-10">
@@ -73,9 +97,11 @@ const JobTile = (props: Props) => {
           <p className="text-sm mb-4 italic">{props.job.description}</p>
         </div>
 
-        <div className="flex flex-col w-fit p-3 rounded-full items-center bg-emerald-950 text-green-500 gap-0 text-center aspect-square h-full">
-          <p className="font-bold mb-[-5px]">99%</p>
-          <p className="text-xs font-bold">Match</p>
+        <div 
+          className={`flex flex-col justify-center items-center w-[110px] rounded-full border-2 p-4 text-center aspect-square h-fit ${getMatchStyles(matchQuality)}`}
+        >
+          <p className="text-2xl font-bold leading-none">{similarity}%</p>
+          <p className="text-xs mt-1">{matchQuality}</p>
         </div>
       </div>
       <div className="flex items-center justify-between">

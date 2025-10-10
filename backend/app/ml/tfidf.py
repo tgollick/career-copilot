@@ -196,7 +196,7 @@ def get_similarity_description(cosine_similarity):
     Convert similarity score to human-readable description.
     Thresholds calibrated for comprehensive CV profiles with smart preprocessing.
     """
-    if cosine_similarity >= 0.55:
+    if cosine_similarity >= 0.50:
         return "Excellent Match"
     elif cosine_similarity >= 0.35:
         return "Strong Match"

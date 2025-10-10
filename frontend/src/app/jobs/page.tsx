@@ -1,14 +1,18 @@
 import JobBoard from "@/components/jobs/JobBoard";
-import { jobs } from "@/db/schema";
+import { Job, jobs, JobWithSimilarity } from "@/db/schema";
 import { db } from "@/lib";
-import { JobWithSimilarityExplicit } from "@/lib/types";
 import { auth } from "@clerk/nextjs/server";
 import React from "react";
 // type Props = {}
 
 const JobsPage = async () => {
-  const initialJobs: JobWithSimilarityExplicit[] = await db.select().from(jobs).limit(15);
+  const initialJobs: Job[] = await db.select().from(jobs).limit(15);
   const { isAuthenticated } = await auth();
+  const initialJobsModified: JobWithSimilarity[] = initialJobs.map((job) => ({
+    ...job,
+    similarity: null,
+    matchQuality: null,
+  }));
 
   return (
     <div className="w-full flex items-center justify-center px-8">
@@ -21,7 +25,7 @@ const JobsPage = async () => {
           Welcome to the Career Co-Pilot Jobs Page!
         </p>
 
-        <JobBoard initialJobs={initialJobs} isAuthed={isAuthenticated} />
+        <JobBoard initialJobs={initialJobsModified} isAuthed={isAuthenticated} />
       </div>
     </div>
   );

@@ -46,28 +46,31 @@ export async function GET(request: NextRequest) {
       conditions.push(gte(jobs.salaryMax, maxSalary));
     }
 
-    // Single query with conditional left join
-    // If userId exists, join with similarities; otherwise, just get jobs
     const jobsQuery = db
       .select({
-        // Job fields
+        // All Job fields - MUST include ALL fields from the jobs table
         id: jobs.id,
+        companyId: jobs.companyId,
         title: jobs.title,
         description: jobs.description,
         location: jobs.location,
         remoteType: jobs.remoteType,
         salaryMin: jobs.salaryMin,
         salaryMax: jobs.salaryMax,
+        salaryCurrency: jobs.salaryCurrency,        // ← Added
         employmentType: jobs.employmentType,
         experienceLevel: jobs.experienceLevel,
         skills: jobs.skills,
         requirements: jobs.requirements,
+        isActive: jobs.isActive,                    // ← Added
         postedAt: jobs.postedAt,
-        companyId: jobs.companyId,
+        expiresAt: jobs.expiresAt,                  // ← Added
+        createdAt: jobs.createdAt,                  // ← Added
+        updatedAt: jobs.updatedAt,                  // ← Added
         
         // Similarity fields (will be null if no match or no userId)
-        similarity: userId ? jobSimilarities.similarity : sql<null>`null`,
-        matchQuality: userId ? jobSimilarities.matchQuality : sql<null>`null`,
+        similarity: userId ? jobSimilarities.similarity : sql<string | null>`null`,
+        matchQuality: userId ? jobSimilarities.matchQuality : sql<string | null>`null`,
       })
       .from(jobs);
 
@@ -115,6 +118,7 @@ export async function GET(request: NextRequest) {
     })
 
     return NextResponse.json(response);
+
   } catch (error) {
     console.error("Database error:", error);
 
