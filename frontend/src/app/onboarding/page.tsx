@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { completeOnboarding } from "./_actions";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import type { CvAnalysis } from "@/db/schema";
+import { useAuth } from "@clerk/nextjs";
 
 type OnboardingStep = "loading" | "upload" | "review";
 
@@ -15,6 +16,7 @@ export default function OnboardingPage() {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [error, setError] = useState("");
+  const { getToken } = useAuth();
 
   // Check if user has already uploaded CV
   useEffect(() => {
@@ -90,8 +92,9 @@ export default function OnboardingPage() {
         throw new Error(result.error);
       }
 
-      // Will redirect via middleware
-      router.push("/");
+      await getToken({ skipCache: true })
+      await new Promise(resolve => setTimeout(resolve, 500));
+      window.location.href = "/"
     } catch (err) {
       console.error("Error completing onboarding:", err);
       throw err;

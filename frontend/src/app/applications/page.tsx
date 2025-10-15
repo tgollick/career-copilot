@@ -1,10 +1,10 @@
 "use client"
 
 import React from "react";
-import { useRouter } from "next/navigation";
+import { useAuth } from "@clerk/nextjs";
 
 const ApplicationsPage = () => {
-  const router = useRouter();
+  const { getToken } = useAuth();
   
   const handleReverseOnboarding = async () => {
     const res = await fetch('/api/reverse', {
@@ -17,7 +17,9 @@ const ApplicationsPage = () => {
       console.error(data.error || "An unknown error occured!")
     } else {
       console.log(data.message)
-      router.push("/");
+      await getToken({ skipCache: true })
+      await new Promise(resolve => setTimeout(resolve, 500));
+      window.location.href = "/";
     }
   }
 
@@ -30,7 +32,7 @@ const ApplicationsPage = () => {
           Welcome to the Career Co-Pilot Applications Page!
         </p>
 
-        <button className="mt-4 bg-neutral-900 rounded-lg p-6 text-lg" onClick={(e) => {
+        <button className="mt-4 bg-neutral-900 rounded-lg p-6 text-lg" onClick={() => {
           handleReverseOnboarding();
         }}>
           Click to reverse onboarding status!
