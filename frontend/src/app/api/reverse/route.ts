@@ -1,5 +1,5 @@
 import { completeOnboarding } from "@/app/onboarding/_actions";
-import { cvAnalyses } from "@/db/schema";
+import { cvAnalyses, jobSimilarities } from "@/db/schema";
 import { db } from "@/lib";
 import { auth } from "@clerk/nextjs/server";
 import { eq } from "drizzle-orm";
@@ -19,6 +19,10 @@ export async function DELETE(request: NextRequest) {
     await db
       .delete(cvAnalyses)
       .where(eq(cvAnalyses.userId, userId))
+
+    await db
+      .delete(jobSimilarities)
+      .where(eq(jobSimilarities.userId, userId));
     
     await completeOnboarding(false);
 
