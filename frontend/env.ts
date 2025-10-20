@@ -22,6 +22,10 @@ const envSchema = z.object({
     .min(1, "Please enter a API key for Deepseek Module"),
 
   FASTAPI_URL: z.string().min(1, "Please provide a FastAPI url endpoint"),
+  AWS_ACCESS_KEY_ID: z.string().min(1, "Please provide a valid AWS Access key."),
+  AWS_SECRET_ACCESS_KEY: z.string().min(1, "Please provide a valid AWS Secret access key."),
+  AWS_REGION: z.string().min(1, "Please provide a valid AWS region"),
+  AWS_BUCKET: z.string().min(1, "Please provide a valid AWS Bucket name"),
 });
 
 // Validate environment variables
@@ -34,6 +38,10 @@ const parseEnv = () => {
     NODE_ENV: process.env.NODE_ENV,
     DEEPSEEK_API_KEY: process.env.DEEPSEEK_API_KEY,
     FASTAPI_URL: process.env.FASTAPI_URL,
+    AWS_ACCESS_KEY_ID: process.env.AWS_ACCESS_KEY_ID,
+    AWS_SECRET_ACCESS_KEY: process.env.AWS_SECRET_ACCESS_KEY,
+    AWS_REGION: process.env.AWS_REGION,
+    AWS_BUCKET: process.env.AWS_BUCKET,
   });
 
   if (!parsed.success) {

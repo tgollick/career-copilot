@@ -4,9 +4,20 @@ import { auth } from "@clerk/nextjs/server";
 // import { insertCVAnalysis } from '@/db/cv-helpers';
 import type { CVAnalysisData } from "@/db/schema";
 import { insertCVAnalysis } from "@/db/cv-helpers";
+import { randomUUID } from "crypto";
+import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
+import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 
 // Configuration
 const FASTAPI_URL = "http://127.0.0.1:8000";
+
+const s3 = new S3Client({
+  region: process.env.AWS_REGION,
+  credentials: {
+    accessKeyId: process.env.AWS_ACCESS_KEY_ID!,
+    secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY!,
+  },
+});
 
 export async function POST(req: NextRequest) {
   try {
@@ -82,6 +93,23 @@ export async function POST(req: NextRequest) {
 
     const cvAnalysisData: CVAnalysisData = analysisResult.data;
 
+
+    console.log("[CV Upload] Upload CV PDF to S3 Bucket");
+
+    const fileBuffer = Buffer.from(await file.arrayBuffer())
+    const key = `${userId}/${randomUUID()}-${file.name}`
+
+    await s3.send(
+      new PutObjectCommand({
+        Bucket: process.env.AWS_BUCKET,
+        Key: key,
+        Body: fileBuffer,
+        ContentType: "application/pdf",
+      })
+    )
+
+    const fileUrl = `https://${process.env.AWS_BUCKET}.s3.${process.env.AWS_REGION}.amazonaws.com/${key}`;
+
     console.log("[CV Upload] Saving CV Analysis results");
 
     try {
@@ -90,7 +118,7 @@ export async function POST(req: NextRequest) {
         cvAnalysisData,
         file.name,
         file.size,
-        undefined // fileUrl - add S3 URL here if you store files
+        fileUrl,
       );
 
       console.log(
@@ -157,6 +185,23 @@ export async function GET(req: NextRequest) {
     const { getActiveCVForUser } = await import("@/db/cv-helpers");
     const activeCV = await getActiveCVForUser(userId);
 
+    if(!activeCV.fileUrl) {
+      return NextResponse.json(
+        { error: "Invalid file URL, cannot retrieve from S3 Bucket" },
+        { status: 401 }
+      )
+    }
+
+    const match = activeCV.fileUrl.match(/amazonaws\.com\/(.+)$/)
+    const key = match ? match[1] : null;
+
+    const command = new GetObjectCommand({
+      Bucket: process.env.AWS_BUCKET!,
+      Key: key!,
+    })
+
+    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 360 })
+
     if (!activeCV) {
       return NextResponse.json(
         { error: "No CV found for this user" },
@@ -167,6 +212,7 @@ export async function GET(req: NextRequest) {
     return NextResponse.json({
       success: true,
       data: activeCV,
+      fileUrl: signedUrl,
     });
   } catch (error) {
     console.error("[CV Fetch] Error:", error);

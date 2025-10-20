@@ -5,6 +5,7 @@ import { db } from "@/lib";
 import { cvAnalyses, jobSimilarities } from "@/db/schema";
 import { eq } from "drizzle-orm";
 import { MatchJobsButton } from "@/components/MatchJobsButton";
+import DisplayCV from "@/components/profile/DisplayCV";
 
 const ProfilePage = async () => {
   const { userId } = await auth();
@@ -49,9 +50,13 @@ const ProfilePage = async () => {
         <div className="w-full bg-neutral-900 rounded-lg shadow-md p-4 mb-4">
           <h2 className="text-2xl font-semibold mb-4">CV Analysis</h2>
           {hasAnalysis ? (
-            <div className="flex items-center gap-2 text-green-600">
-              <span>✅</span>
-              <span>CV Analyzed</span>
+            <div>
+              <div className="flex items-center gap-2 text-green-600">
+                <span>✅</span>
+                <span>CV Analyzed</span>
+              </div>
+
+              <DisplayCV />
             </div>
           ) : (
             <div className="flex items-center gap-2 text-gray-500">
