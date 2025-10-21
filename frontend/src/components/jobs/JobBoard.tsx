@@ -8,17 +8,16 @@ import { SpinnerCircularSplit } from "spinners-react";
 import Filters from "./Filters";
 
 type Props = {
-  initialJobs: JobWithSimilarity[];
   isAuthed: boolean;
 };
 
 const JobBoard = (props: Props) => {
-  const [jobs, setJobs] = useState<JobWithSimilarity[]>(props.initialJobs);
+  const [jobs, setJobs] = useState<JobWithSimilarity[]>([]);
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationInfo>({
     currentPage: 1,
     totalPages: 1,
-    totalItems: props.initialJobs.length,
+    totalItems: 0,
     itemsPerPage: 15,
     hasNextPage: false,
     hasPreviousPage: false,
@@ -27,7 +26,7 @@ const JobBoard = (props: Props) => {
   const [searchTerm, setSearchTerm] = useState<string>("");
   const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<number>(0);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const isFirstRender = useRef(true);
 
@@ -66,6 +65,10 @@ const JobBoard = (props: Props) => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchJobs(1);
+  }, [])
 
   // Debounced effect - only fires 500ms after user stops typing
   useEffect(() => {

@@ -6,13 +6,7 @@ import React from "react";
 // type Props = {}
 
 const JobsPage = async () => {
-  const initialJobs: Job[] = await db.select().from(jobs).limit(15);
   const { isAuthenticated } = await auth();
-  const initialJobsModified: JobWithSimilarity[] = initialJobs.map((job) => ({
-    ...job,
-    similarity: null,
-    matchQuality: null,
-  }));
 
   return (
     <div className="w-full flex items-center justify-center px-8">
@@ -25,7 +19,7 @@ const JobsPage = async () => {
           Welcome to the Career Co-Pilot Jobs Page!
         </p>
 
-        <JobBoard initialJobs={initialJobsModified} isAuthed={isAuthenticated} />
+        <JobBoard isAuthed={isAuthenticated} />
       </div>
     </div>
   );
