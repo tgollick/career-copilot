@@ -1,4 +1,6 @@
-import React from 'react'
+import { Label } from "@/components/ui/label"
+import { Banknote, MapPin, Search } from 'lucide-react';
+import { Input } from '@/components/ui/input';
 
 type Props = {
   handleSearch: (term: string) => void;
@@ -9,30 +11,85 @@ type Props = {
 
 const Filters = (props: Props) => {
   return (
-    <div className="p-4 rounded-md bg-neutral-900 mb-4">
-      <div className="flex flex-col mb-2">
-        <label htmlFor="searchTerm">Search...</label>
-        <input type="input" onChange={(e) => props.handleSearch(e.target.value)} id="searchTerm" placeholder="Machine learning" className="p-2 bg-neutral-800 rounded-sm"/>
+    <div className="bg-card border border-border/50 rounded-xl p-6 mb-8 shadow-lg">
+      <div className="flex items-center gap-2 mb-6">
+        <div className="p-2 bg-primary/10 rounded-lg">
+          <Search className="h-5 w-5 text-primary" />
+        </div>
+        <h3 className="text-lg font-bold">Filter Opportunities</h3>
       </div>
 
-      <div className="flex w-full gap-2">
-        <div className="w-full">
-          <label htmlFor="location">Location</label>
-          <input type="input" onChange={(e) => props.handleLocation(e.target.value)} id="location" placeholder="Manchester" className="p-2 w-full bg-neutral-800 rounded-sm"/>
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+        {/* Search Input */}
+        <div className="md:col-span-2 space-y-2">
+          <Label htmlFor="searchTerm" className="text-sm font-semibold text-foreground">
+            Search Jobs
+          </Label>
+          <div className="relative">
+            <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+            <Input
+              type="text"
+              onChange={(e) => props.handleSearch(e.target.value)}
+              id="searchTerm"
+              placeholder="e.g. Machine Learning Engineer"
+              className="pl-11 h-12 bg-background border-border/50 focus:border-primary transition-colors text-base"
+            />
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="minSalary">Minimum Salary</label>
-          <input type="number" onChange={(e) => props.handleMinSalary(parseInt(e.target.value))} id="minSalary" className="p-2 bg-neutral-800 rounded-sm"/>
+        {/* Location Input */}
+        <div className="space-y-2">
+          <Label htmlFor="location" className="text-sm font-semibold text-foreground">
+            Location
+          </Label>
+          <div className="relative">
+            <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+            <Input
+              type="text"
+              onChange={(e) => props.handleLocation(e.target.value)}
+              id="location"
+              placeholder="e.g. Manchester"
+              className="pl-11 h-12 bg-background border-border/50 focus:border-primary transition-colors text-base"
+            />
+          </div>
         </div>
 
-        <div>
-          <label htmlFor="maxSalary">Maximum Salary</label>
-          <input type="number" onChange={(e) => props.handleMaxSalary(parseInt(e.target.value))} id="maxSalary" className="p-2 bg-neutral-800 rounded-sm"/>
+        {/* Salary Range */}
+        <div className="grid grid-cols-2 gap-4">
+          <div className="space-y-2">
+            <Label htmlFor="minSalary" className="text-sm font-semibold text-foreground">
+              Min Salary
+            </Label>
+            <div className="relative">
+              <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+              <Input
+                type="number"
+                onChange={(e) => props.handleMinSalary(Number.parseInt(e.target.value) || 0)}
+                id="minSalary"
+                placeholder="30000"
+                className="pl-11 h-12 bg-background border-border/50 focus:border-primary transition-colors text-base"
+              />
+            </div>
+          </div>
+
+          <div className="space-y-2">
+            <Label htmlFor="maxSalary" className="text-sm font-semibold text-foreground">
+              Max Salary
+            </Label>
+            <div className="relative">
+              <Banknote className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-primary" />
+              <Input
+                type="number"
+                onChange={(e) => props.handleMaxSalary(Number.parseInt(e.target.value) || 0)}
+                id="maxSalary"
+                placeholder="100000"
+                className="pl-11 h-12 bg-background border-border/50 focus:border-primary transition-colors text-base"
+              />
+            </div>
+          </div>
         </div>
       </div>
-    </div>
-  )
+    </div>  )
 }
 
 export default Filters

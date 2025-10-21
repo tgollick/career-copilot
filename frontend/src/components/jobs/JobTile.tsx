@@ -1,10 +1,12 @@
 "use client";
 
 import React, { useState } from "react";
-import { JobWithSimilarity, type Job } from "@/db/schema";
-import { SpinnerCircularSplit } from "spinners-react";
+import { JobWithSimilarity } from "@/db/schema";
 import { CoverLetterDocument } from "./CoverLetterDocument";
 import { pdf } from "@react-pdf/renderer";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge"
+import { Banknote, ExternalLink, FileText, Loader2, MapPin, Sparkles } from "lucide-react";
 
 type Props = {
   job: JobWithSimilarity;
@@ -17,21 +19,21 @@ const JobTile = (props: Props) => {
   const getMatchStyles = (matchQuality: string | null) => {
     switch (matchQuality) {
       case "Excellent Match":
-        return "bg-gradient-to-br from-green-400 to-emerald-500 text-white border-green-300 shadow-lg";
+        return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-emerald-500/10"
       case "Strong Match":
-        return "bg-gradient-to-br from-blue-400 to-indigo-500 text-white border-blue-300 shadow-lg";
+        return "bg-blue-500/15 text-blue-400 border-blue-500/30 shadow-blue-500/10"
       case "Good Match":
-        return "bg-gradient-to-br from-violet-400 to-purple-500 text-white border-violet-300 shadow-lg";
+        return "bg-violet-500/15 text-violet-400 border-violet-500/30 shadow-violet-500/10"
       case "Moderate Match":
-        return "bg-gradient-to-br from-yellow-400 to-amber-500 text-white border-yellow-300 shadow-lg";
+        return "bg-amber-500/15 text-amber-400 border-amber-500/30 shadow-amber-500/10"
       case "Weak Match":
-        return "bg-gradient-to-br from-orange-400 to-red-400 text-white border-orange-300 shadow-lg";
+        return "bg-orange-500/15 text-orange-400 border-orange-500/30 shadow-orange-500/10"
       case "No Match":
-        return "bg-gradient-to-br from-red-400 to-rose-500 text-white border-red-300 shadow-lg";
+        return "bg-red-500/15 text-red-400 border-red-500/30 shadow-red-500/10"
       default:
-        return "bg-gradient-to-br from-gray-400 to-slate-500 text-white border-gray-300 shadow-lg";
+        return "bg-muted text-muted-foreground border-border"
     }
-  };
+  }
 
   const getCoverLetter = async (job: JobWithSimilarity) => {
     try {
@@ -90,77 +92,88 @@ const JobTile = (props: Props) => {
   const matchQuality = props.job.matchQuality ?? "Unknown";
 
   return (
-    <div className="bg-neutral-900 p-4 rounded-md flex flex-col mb-4">
-      <div className="flex gap-10">
-        <div className="w-full">
-          <h2 className="text-lg font-bold">{props.job.title}</h2>
-          <p className="text-sm mb-4 italic">{props.job.description}</p>
+      <div className="group bg-card border border-border/50 rounded-xl p-6 shadow-lg hover:shadow-xl hover:border-primary/30 transition-all duration-300 relative overflow-hidden">
+      <div className="absolute inset-0 bg-gradient-to-br from-primary/[0.02] to-transparent opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none" />
+
+      <div className="relative space-y-4">
+        <div className="flex items-start justify-between gap-4">
+          <div className="flex-1 space-y-2">
+            <h2 className="text-2xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
+              {props.job.title}
+            </h2>
+            <p className="text-base font-medium text-muted-foreground">Job Name 1</p>
+          </div>
+
+          <Badge
+            variant="outline"
+            className={`${getMatchStyles(matchQuality)} shrink-0 px-4 py-2 font-bold text-base shadow-lg flex items-center gap-2`}
+          >
+            <Sparkles className="h-4 w-4" />
+            {similarity}%
+          </Badge>
         </div>
 
-        <div 
-          className={`flex flex-col justify-center items-center w-[110px] rounded-full border-2 p-4 text-center aspect-square h-fit ${getMatchStyles(matchQuality)}`}
-        >
-          <p className="text-2xl font-bold leading-none">{similarity}%</p>
-          <p className="text-xs mt-1">{matchQuality}</p>
+        <p className="text-sm text-muted-foreground leading-relaxed line-clamp-2">{props.job.description}</p>
+
+        <div className="flex flex-wrap items-center gap-3">
+          <div className="inline-flex items-center gap-2 bg-secondary/80 px-4 py-2 rounded-lg border border-border/50">
+            <MapPin className="h-4 w-4 text-primary" />
+            <span className="text-sm font-medium">{props.job.location}</span>
+          </div>
+
+          <div className="inline-flex items-center gap-2 bg-primary/10 px-4 py-2 rounded-lg border border-primary/20">
+            <Banknote className="h-4 w-4 text-primary" />
+            <span className="text-sm font-semibold text-foreground">
+              £{props.job.salaryMin?.toLocaleString("en-GB")} - £{props.job.salaryMax?.toLocaleString("en-GB")}
+            </span>
+          </div>
         </div>
-      </div>
-      <div className="flex items-center justify-between">
-        <p className="bg-neutral-800 px-4 py-2 rounded-sm">
-          <span className="font-bold">Salary:</span> £
-          {props.job.salaryMin?.toLocaleString("en-GB")} - £
-          {props.job.salaryMax?.toLocaleString("en-GB")}
-        </p>
-        <div>
-          <button
+
+        <div className="flex flex-wrap items-center gap-3 pt-4">
+          <Button
             disabled={!props.isAuthed}
             onClick={() => window.open("https://google.com")}
-            className={`w-fit bg-blue-500 text-white px-4 py-2 rounded-sm mr-2 ${
-              props.isAuthed
-                ? "hover:cursor-pointer"
-                : "opacity-20 hover:cursor-not-allowed"
-            }`}
+            className="gap-2 font-semibold shadow-lg hover:shadow-xl transition-shadow"
+            size="lg"
           >
             Apply Now
-          </button>
+            <ExternalLink className="h-4 w-4" />
+          </Button>
+
           {props.isAuthed && (
-            <button
+            <Button
               disabled={loading}
               onClick={async (e) => {
-                e.preventDefault();
-                setLoading(true);
-                const data = await getCoverLetter(props.job);
+                e.preventDefault()
+                setLoading(true)
+                const data = await getCoverLetter(props.job)
                 if (data) {
                   openCoverLetterPDF(
                     data.coverLetter,
                     props.job.title,
                     data.companyName,
                     data.candidateName,
-                    data.candidateContact
-                  );
+                    data.candidateContact,
+                  )
                 }
-                setLoading(false);
+                setLoading(false)
               }}
-              className={`w-fit bg-gray-700 text-white px-4 py-2 rounded-sm ${
-                loading
-                  ? "opacity-50 cursor-not-allowed"
-                  : "hover:cursor-pointer"
-              }`}
+              variant="secondary"
+              className="gap-2 font-semibold shadow-md hover:shadow-lg transition-shadow"
+              size="lg"
             >
               {loading ? (
-                <div className="flex flex-row items-center gap-2">
-                  Generating{" "}
-                  <SpinnerCircularSplit
-                    size={20}
-                    thickness={180}
-                    speed={78}
-                    color="#36ad47"
-                    secondaryColor="rgba(0, 0, 0, 0.44)"
-                  />
-                </div>
+                <>
+                  Generating
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                </>
               ) : (
-                "Generate Cover Letter"
+                <>
+                  <FileText className="h-4 w-4" />
+                  Generate Cover Letter
+                </>
               )}
-            </button>
+            </Button>
           )}
         </div>
       </div>

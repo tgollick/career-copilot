@@ -1,11 +1,11 @@
 "use client";
 import React, { useEffect, useState, useRef } from "react";
 import JobTile from "./JobTile";
-import { JobWithSimilarity, type Job } from "@/db/schema";
-import { JobsApiResponse, type PaginationInfo } from "@/lib/types";
+import { JobWithSimilarity } from "@/db/schema";
+import { type PaginationInfo } from "@/lib/types";
 import Pagination from "./Pagination";
-import { SpinnerCircularSplit } from "spinners-react";
 import Filters from "./Filters";
+import { Briefcase, Loader2 } from "lucide-react";
 
 type Props = {
   isAuthed: boolean;
@@ -107,47 +107,57 @@ const JobBoard = (props: Props) => {
   };
 
   return (
-    <div className="w-full">
-      <Filters handleSearch={handleSearchTermChange} handleLocation={handleLocationChange} handleMinSalary={handleMinSalaryChange} handleMaxSalary={handleMaxSalaryChange}/>
+<div className="w-full">
+      <Filters
+        handleSearch={handleSearchTermChange}
+        handleLocation={handleLocationChange}
+        handleMinSalary={handleMinSalaryChange}
+        handleMaxSalary={handleMaxSalaryChange}
+      />
 
-      {/* Loading State */}
       {loading && (
-        <div className="flex justify-center items-center py-20">
-          <SpinnerCircularSplit
-            size={50}
-            thickness={180}
-            speed={78}
-            color="#36ad47"
-            secondaryColor="rgba(0, 0, 0, 0.44)"
-          />
+        <div className="flex flex-col items-center justify-center py-24 gap-4">
+          <div className="relative">
+            <div className="absolute inset-0 bg-primary/20 blur-xl rounded-full" />
+            <Loader2 className="h-12 w-12 text-primary animate-spin relative" />
+          </div>
+          <p className="text-sm font-medium text-muted-foreground">Finding your perfect matches...</p>
         </div>
       )}
 
-      {/* Jobs List */}
       {!loading && (
         <>
-          {/* Results Summary */}
-          <div className="mb-4 text-sm text-neutral-400">
-            Showing {(currentPage - 1) * pagination.itemsPerPage + 1}-
-            {Math.min(
-              currentPage * pagination.itemsPerPage,
-              pagination.totalItems
-            )}{" "}
-            of {pagination.totalItems} jobs
+          <div className="flex items-center gap-3 mb-6 px-4 py-3 bg-muted/50 rounded-lg border border-border/50">
+            <div className="p-2 bg-primary/10 rounded-md">
+              <Briefcase className="h-4 w-4 text-primary" />
+            </div>
+            <span className="text-sm font-medium">
+              Showing{" "}
+              <span className="text-foreground font-semibold">
+                {(currentPage - 1) * pagination.itemsPerPage + 1}-
+                {Math.min(currentPage * pagination.itemsPerPage, pagination.totalItems)}
+              </span>{" "}
+              of <span className="text-foreground font-semibold">{pagination.totalItems}</span> opportunities
+            </span>
           </div>
 
           {/* Job Tiles */}
-          {jobs.length > 0 ? (
-            jobs.map((job) => (
-              <JobTile key={job.id} job={job} isAuthed={props.isAuthed} />
-            ))
-          ) : (
-            <div className="text-center py-20 text-neutral-500">
-              No jobs found
-            </div>
-          )}
+          <div className="space-y-4">
+            {jobs.length > 0 ? (
+              jobs.map((job) => <JobTile key={job.id} job={job} isAuthed={props.isAuthed} />)
+            ) : (
+              <div className="flex flex-col items-center justify-center py-20 text-center">
+                <div className="bg-muted rounded-full p-6 mb-4">
+                  <Briefcase className="h-12 w-12 text-muted-foreground" />
+                </div>
+                <h3 className="text-lg font-semibold mb-2">No jobs found</h3>
+                <p className="text-sm text-muted-foreground max-w-md">
+                  Try adjusting your filters or search terms to find more opportunities
+                </p>
+              </div>
+            )}
+          </div>
 
-          {/* Pagination Controls */}
           <Pagination
             currentPage={currentPage}
             totalPages={pagination.totalPages}
