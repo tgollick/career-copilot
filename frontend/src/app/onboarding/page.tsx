@@ -1,7 +1,6 @@
 // frontend/src/app/onboarding/page.tsx
 "use client";
 import React, { useState, useEffect } from "react";
-import { useRouter } from "next/navigation";
 import { completeOnboarding } from "./_actions";
 import OnboardingForm from "@/components/onboarding/OnboardingForm";
 import type { CvAnalysis } from "@/db/schema";
@@ -10,7 +9,6 @@ import { useAuth } from "@clerk/nextjs";
 type OnboardingStep = "loading" | "upload" | "review";
 
 export default function OnboardingPage() {
-  const router = useRouter();
   const [step, setStep] = useState<OnboardingStep>("loading");
   const [cvAnalysis, setCvAnalysis] = useState<CvAnalysis | null>(null);
   const [file, setFile] = useState<File | null>(null);

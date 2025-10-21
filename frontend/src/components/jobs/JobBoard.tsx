@@ -1,5 +1,5 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import JobTile from "./JobTile";
 import { JobWithSimilarity, type Job } from "@/db/schema";
 import { JobsApiResponse, type PaginationInfo } from "@/lib/types";
@@ -11,11 +11,6 @@ type Props = {
   initialJobs: JobWithSimilarity[];
   isAuthed: boolean;
 };
-
-// TO DO 
-// - Fix pagination page count when filters are added
-// - Fix no. result displayed at top (again pagniation component related me thinks)
-// - Get claude to give it all a once over
 
 const JobBoard = (props: Props) => {
   const [jobs, setJobs] = useState<JobWithSimilarity[]>(props.initialJobs);
@@ -33,6 +28,8 @@ const JobBoard = (props: Props) => {
   const [minSalary, setMinSalary] = useState<number>(0);
   const [maxSalary, setMaxSalary] = useState<number>(0);
   const [loading, setLoading] = useState(false);
+
+  const isFirstRender = useRef(true);
 
   const fetchJobs = async (
     page: number,
@@ -72,6 +69,11 @@ const JobBoard = (props: Props) => {
 
   // Debounced effect - only fires 500ms after user stops typing
   useEffect(() => {
+    if (isFirstRender.current) {
+      isFirstRender.current = false;
+      return;
+    }
+
     const timeoutId = setTimeout(() => {
       fetchJobs(1, { location, searchTerm, minSalary, maxSalary });
     }, 1000); // 500ms delay (adjust as needed)
@@ -100,10 +102,6 @@ const JobBoard = (props: Props) => {
   const handlePageChange = (page: number) => {
     fetchJobs(page, { location, searchTerm, minSalary, maxSalary });
   };
-
-  useEffect(() => {
-    fetchJobs(1);
-  }, []);
 
   return (
     <div className="w-full">
