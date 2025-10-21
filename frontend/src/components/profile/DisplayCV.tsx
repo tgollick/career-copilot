@@ -10,7 +10,7 @@ const DisplayCV = (props: Props) => {
 
   useEffect(() => {
     const fetchCV = async () => {
-      const res = await fetch("/api/cv/upload");
+      const res = await fetch("/api/cv/url");
 
       const data = await res.json()
 

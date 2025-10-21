@@ -1,12 +1,10 @@
 // app/api/cv/upload/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import { auth } from "@clerk/nextjs/server";
-// import { insertCVAnalysis } from '@/db/cv-helpers';
 import type { CVAnalysisData } from "@/db/schema";
 import { insertCVAnalysis } from "@/db/cv-helpers";
 import { randomUUID } from "crypto";
-import { GetObjectCommand, PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
+import { PutObjectCommand, S3Client } from "@aws-sdk/client-s3";
 
 // Configuration
 const FASTAPI_URL = "http://127.0.0.1:8000";
@@ -113,6 +111,7 @@ export async function POST(req: NextRequest) {
     console.log("[CV Upload] Saving CV Analysis results");
 
     try {
+      // Save analysis results into DB
       const savedCV = await insertCVAnalysis(
         userId!,
         cvAnalysisData,
@@ -126,8 +125,6 @@ export async function POST(req: NextRequest) {
       );
 
       // 7. Return success response
-      // 6. Save to database using Drizzle
-
       return NextResponse.json({
         success: true,
         message: "CV analyzed and saved successfully",
@@ -173,56 +170,3 @@ export async function POST(req: NextRequest) {
   }
 }
 
-// GET endpoint to retrieve user's active CV
-export async function GET(req: NextRequest) {
-  try {
-    const { userId } = await auth();
-
-    if (!userId) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
-    const { getActiveCVForUser } = await import("@/db/cv-helpers");
-    const activeCV = await getActiveCVForUser(userId);
-
-    if(!activeCV.fileUrl) {
-      return NextResponse.json(
-        { error: "Invalid file URL, cannot retrieve from S3 Bucket" },
-        { status: 401 }
-      )
-    }
-
-    const match = activeCV.fileUrl.match(/amazonaws\.com\/(.+)$/)
-    const key = match ? match[1] : null;
-
-    const command = new GetObjectCommand({
-      Bucket: process.env.AWS_BUCKET!,
-      Key: key!,
-    })
-
-    const signedUrl = await getSignedUrl(s3, command, { expiresIn: 360 })
-
-    if (!activeCV) {
-      return NextResponse.json(
-        { error: "No CV found for this user" },
-        { status: 404 }
-      );
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: activeCV,
-      fileUrl: signedUrl,
-    });
-  } catch (error) {
-    console.error("[CV Fetch] Error:", error);
-
-    return NextResponse.json(
-      {
-        error: "Failed to fetch CV",
-        details: error instanceof Error ? error.message : "Unknown error",
-      },
-      { status: 500 }
-    );
-  }
-}

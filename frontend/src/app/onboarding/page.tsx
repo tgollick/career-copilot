@@ -25,7 +25,7 @@ export default function OnboardingPage() {
 
   const checkForExistingCV = async () => {
     try {
-      const response = await fetch("/api/cv/upload");
+      const response = await fetch("/api/cv");
 
       if (response.ok) {
         const data = await response.json();
