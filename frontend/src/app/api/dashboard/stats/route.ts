@@ -4,13 +4,6 @@ import { auth } from "@clerk/nextjs/server";
 import { eq, ne, sql } from "drizzle-orm";
 import { NextRequest, NextResponse } from "next/server";
 
-type Statistic = {
-  totalMatches: number,
-  averageMatchQuality: number,
-  cvStatus: string, 
-  activeJobs: number,
-}
-
 export async function GET(req: NextRequest) {
   const { userId } = await auth()
 

@@ -2,10 +2,6 @@
 
 import { Badge } from "@/components/ui/badge"
 import { Button } from "@/components/ui/button"
-import { cvAnalyses, users } from "@/db/schema"
-import { db } from "@/lib"
-import { auth } from "@clerk/nextjs/server"
-import { eq } from "drizzle-orm"
 import {
   Briefcase,
   TrendingUp,
@@ -19,121 +15,10 @@ import {
   Award,
   Clock,
   Sparkles,
-  Loader2,
   Loader,
 } from "lucide-react"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-
-// Mock data for dashboard
-const mockStats = {
-  totalMatches: 47,
-  averageMatchQuality: 78,
-  cvStatus: "analyzed",
-  activeJobs: 156,
-}
-
-const mockTopMatches = [
-  {
-    id: 1,
-    title: "Senior Full Stack Developer",
-    company: "TechCorp Solutions",
-    location: "London, UK",
-    salary: "£70,000 - £90,000",
-    matchQuality: 94,
-    matchLabel: "Excellent Match",
-    postedDate: "2 days ago",
-  },
-  {
-    id: 2,
-    title: "Machine Learning Engineer",
-    company: "AI Innovations Ltd",
-    location: "Remote",
-    salary: "£80,000 - £100,000",
-    matchQuality: 89,
-    matchLabel: "Excellent Match",
-    postedDate: "1 week ago",
-  },
-  {
-    id: 3,
-    title: "Python Backend Developer",
-    company: "DataFlow Systems",
-    location: "Manchester, UK",
-    salary: "£55,000 - £70,000",
-    matchQuality: 85,
-    matchLabel: "Good Match",
-    postedDate: "3 days ago",
-  },
-  {
-    id: 4,
-    title: "DevOps Engineer",
-    company: "CloudScale Inc",
-    location: "Bristol, UK",
-    salary: "£60,000 - £80,000",
-    matchQuality: 81,
-    matchLabel: "Good Match",
-    postedDate: "5 days ago",
-  },
-  {
-    id: 5,
-    title: "React Developer",
-    company: "Frontend Masters",
-    location: "Remote",
-    salary: "£50,000 - £65,000",
-    matchQuality: 76,
-    matchLabel: "Good Match",
-    postedDate: "1 week ago",
-  },
-]
-
-const mockRecentJobs = [
-  {
-    id: 6,
-    title: "Junior Python Developer",
-    company: "StartupHub",
-    location: "London, UK",
-    salary: "£30,000 - £40,000",
-    postedDate: "1 hour ago",
-  },
-  {
-    id: 7,
-    title: "Data Scientist",
-    company: "Analytics Pro",
-    location: "Edinburgh, UK",
-    salary: "£65,000 - £85,000",
-    postedDate: "3 hours ago",
-  },
-  {
-    id: 8,
-    title: "Cloud Architect",
-    company: "Enterprise Solutions",
-    location: "Remote",
-    salary: "£90,000 - £120,000",
-    postedDate: "5 hours ago",
-  },
-  {
-    id: 9,
-    title: "Frontend Engineer",
-    company: "Design Systems Co",
-    location: "Birmingham, UK",
-    salary: "£45,000 - £60,000",
-    postedDate: "8 hours ago",
-  },
-  {
-    id: 10,
-    title: "QA Automation Engineer",
-    company: "TestLab Solutions",
-    location: "Leeds, UK",
-    salary: "£40,000 - £55,000",
-    postedDate: "12 hours ago",
-  },
-]
-
-const mockProfile = {
-  name: "John Developer",
-  email: "john.developer@example.com",
-  topSkills: ["Python", "React", "TypeScript", "Machine Learning", "AWS"],
-}
 
 // Info needed:
 // Profile info:
@@ -158,7 +43,7 @@ type Job = {
   company: string,
   location: string,
   salary: string,
-  postedDate: Date,
+  postedDate: string,
 }
 
 // Top 5 best matching jobs (IN SAME TYPE FORMAT!)
@@ -183,8 +68,8 @@ const getMatchQualityColor = (quality: number) => {
 export default function DashboardPage() {
   const [userInfo, setUserInfo] = useState<Profile | null>(null)
   const [statistics, setStatistics] = useState<Statistic | null>(null)
-  const [newestJobs, setNewestJobs] = useState<Job | null>(null)
-  const [bestMatchedJobs, setBestMatchedJobs] = useState<MatchedJob | null>(null)
+  const [newestJobs, setNewestJobs] = useState<Job[] | null>(null)
+  const [bestMatchedJobs, setBestMatchedJobs] = useState<MatchedJob[] | null>(null)
   const [error, setError] = useState<string | null>(null)
 
   const getUserInfo = async () => {
@@ -215,16 +100,22 @@ export default function DashboardPage() {
     }
   }
 
-  const getNewestJobs = async () => {
-  }
+  const getJobs = async () => {
+    const res = await fetch("/api/dashboard/jobs");
+    const data = await res.json();
 
-  const getMatchedJobs = async () => {
-
+    if(!res.ok) {
+      setError(data.error)
+    } else {
+      setNewestJobs(data.newestJobs)
+      setBestMatchedJobs(data.bestJobs)
+    }
   }
 
   useEffect(() => {
     getUserInfo();
     getStatistics();
+    getJobs();
   }, [])
 
   return (
@@ -313,50 +204,57 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-4">
-                {mockTopMatches.map((job) => (
-                  <div
-                    key={job.id}
-                    className="bg-background border border-border rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group"
-                  >
-                    <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
-                      <div className="flex-1">
-                        <div className="flex items-start gap-3 mb-2">
-                          <h3 className="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors">
-                            {job.title}
-                          </h3>
-                          <Badge className={`${getMatchQualityColor(job.matchQuality)} border font-semibold shrink-0`}>
-                            {job.matchQuality}%
-                          </Badge>
-                        </div>
-                        <p className="text-sm sm:text-base text-muted-foreground mb-3">{job.company}</p>
-                        <div className="flex flex-wrap gap-3 text-xs sm:text-sm text-muted-foreground">
-                          <div className="flex items-center gap-1.5">
-                            <MapPin className="w-4 h-4" />
-                            {job.location}
+                {!bestMatchedJobs ? (
+                  <div className="flex flex-col items-center justify-center gap-2">
+                      <Loader />
+                      <p>Loading best matched jobs...</p>
+                  </div>
+                ) : (
+                  bestMatchedJobs.map((job) => (  // Removed the extra {
+                    <div
+                      key={job.id}
+                      className="bg-background border border-border rounded-lg sm:rounded-xl p-4 sm:p-6 hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5 group"
+                    >
+                      <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-4 mb-4">
+                        <div className="flex-1">
+                          <div className="flex items-start gap-3 mb-2">
+                            <h3 className="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors">
+                              {job.title}
+                            </h3>
+                            <Badge className={`${getMatchQualityColor(job.matchQuality)} border font-semibold shrink-0`}>
+                              {job.matchQuality}%
+                            </Badge>
                           </div>
-                          <div className="flex items-center gap-1.5">
-                            <DollarSign className="w-4 h-4" />
-                            {job.salary}
-                          </div>
-                          <div className="flex items-center gap-1.5">
-                            <Clock className="w-4 h-4" />
-                            {job.postedDate}
+                          <p className="text-sm sm:text-base text-muted-foreground mb-3">{job.company}</p>
+                          <div className="flex flex-wrap gap-3 text-xs sm:text-sm text-muted-foreground">
+                            <div className="flex items-center gap-1.5">
+                              <MapPin className="w-4 h-4" />
+                              {job.location}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <DollarSign className="w-4 h-4" />
+                              {job.salary}
+                            </div>
+                            <div className="flex items-center gap-1.5">
+                              <Clock className="w-4 h-4" />
+                              {job.postedDate}
+                            </div>
                           </div>
                         </div>
                       </div>
+                      <div className="flex flex-col sm:flex-row gap-2">
+                        <Button size="sm" className="w-full sm:w-auto group/btn">
+                          Apply Now
+                          <ExternalLink className="w-4 h-4 ml-2 group-hover/btn:translate-x-0.5 transition-transform" />
+                        </Button>
+                        <Button size="sm" variant="outline" className="w-full sm:w-auto bg-transparent">
+                          <FileText className="w-4 h-4 mr-2" />
+                          Generate Cover Letter
+                        </Button>
+                      </div>
                     </div>
-                    <div className="flex flex-col sm:flex-row gap-2">
-                      <Button size="sm" className="w-full sm:w-auto group/btn">
-                        Apply Now
-                        <ExternalLink className="w-4 h-4 ml-2 group-hover/btn:translate-x-0.5 transition-transform" />
-                      </Button>
-                      <Button size="sm" variant="outline" className="w-full sm:w-auto bg-transparent">
-                        <FileText className="w-4 h-4 mr-2" />
-                        Generate Cover Letter
-                      </Button>
-                    </div>
-                  </div>
-                ))}
+                  ))  
+                )}
               </div>
 
               <Button asChild variant="outline" className="w-full mt-4 sm:hidden bg-transparent">
@@ -380,32 +278,39 @@ export default function DashboardPage() {
               </div>
 
               <div className="space-y-3">
-                {mockRecentJobs.map((job) => (
-                  <div
-                    key={job.id}
-                    className="bg-background border border-border rounded-lg p-4 hover:border-accent/50 transition-all hover:shadow-md hover:shadow-accent/5 group"
-                  >
-                    <div className="flex items-start justify-between gap-3 mb-2">
-                      <h3 className="text-base sm:text-lg font-semibold group-hover:text-accent transition-colors">
-                        {job.title}
-                      </h3>
-                      <Badge variant="secondary" className="text-xs shrink-0">
-                        {job.postedDate}
-                      </Badge>
-                    </div>
-                    <p className="text-sm text-muted-foreground mb-2">{job.company}</p>
-                    <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
-                      <div className="flex items-center gap-1.5">
-                        <MapPin className="w-3.5 h-3.5" />
-                        {job.location}
-                      </div>
-                      <div className="flex items-center gap-1.5">
-                        <DollarSign className="w-3.5 h-3.5" />
-                        {job.salary}
-                      </div>
-                    </div>
+                {!newestJobs ? (
+                  <div className="flex flex-col items-center justify-center gap-2">
+                      <Loader />
+                      <p>Loading newest jobs...</p>
                   </div>
-                ))}
+                ) : (
+                  newestJobs.map((job) => (
+                    <div
+                      key={job.id}
+                      className="bg-background border border-border rounded-lg p-4 hover:border-accent/50 transition-all hover:shadow-md hover:shadow-accent/5 group"
+                    >
+                      <div className="flex items-start justify-between gap-3 mb-2">
+                        <h3 className="text-base sm:text-lg font-semibold group-hover:text-accent transition-colors">
+                          {job.title}
+                        </h3>
+                        <Badge variant="secondary" className="text-xs shrink-0">
+                          {job.postedDate}
+                        </Badge>
+                      </div>
+                      <p className="text-sm text-muted-foreground mb-2">{job.company}</p>
+                      <div className="flex flex-wrap gap-3 text-xs text-muted-foreground">
+                        <div className="flex items-center gap-1.5">
+                          <MapPin className="w-3.5 h-3.5" />
+                          {job.location}
+                        </div>
+                        <div className="flex items-center gap-1.5">
+                          <DollarSign className="w-3.5 h-3.5" />
+                          {job.salary}
+                        </div>
+                      </div>
+                    </div>
+                  ))
+                )}
               </div>
             </div>
           </div>
