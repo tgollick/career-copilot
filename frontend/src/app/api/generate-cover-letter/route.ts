@@ -1,11 +1,9 @@
-// app/api/generate-cover-letter/route.ts
 import { auth } from "@clerk/nextjs/server";
 import { NextResponse } from "next/server";
 import OpenAI from "openai";
 import { env } from "../../../../env";
-import { CVAnalysisResults } from "@/lib/types";
 import { db } from "@/lib";
-import { Company, Job, companies } from "@/db/schema";
+import { CVAnalysisData, Company, CvAnalysis, Job, companies, cvAnalyses } from "@/db/schema";
 import { eq } from "drizzle-orm";
 
 const openai = new OpenAI({
@@ -36,148 +34,18 @@ export async function POST(req: Request) {
     throw new Error("Company not found");
   }
 
-  // Fetch user data securely from your DB
-  // For now we are going to mock with Fake info as we dont have custom onboarding setup with Clerk
-  // TO DO ^^^^^^
-  const results = {
-    contact_info: {
-      email: "thomas.gollick@example.com",
-      phone: "+44 7123 456789",
-      linkedin: "linkedin.com/in/thomasgollick",
-      github: "github.com/tgollick",
-      location: "Manchester, UK",
-    },
-    sections: {
-      personal_statement:
-        "Recent Computer Science graduate with First Class Honours from Manchester Metropolitan University...",
-      education:
-        "BSc Computer Science (First Class Honours) - Manchester Metropolitan University (2021-2024)...",
-      experience:
-        "Full Stack Developer - Freelance (2024) • Built responsive website for DSG Mortgages using React and Node.js...",
-      skills:
-        "Programming Languages: Python, JavaScript, TypeScript, Java, C#, HTML, CSS...",
-      projects:
-        "Career Copilot - AI-powered job application assistant built with Python, FastAPI, and OpenAI...",
-    },
-    skills: {
-      programming_languages: [
-        "Python",
-        "JavaScript",
-        "TypeScript",
-        "Java",
-        "C#",
-        "HTML",
-        "CSS",
-        "SQL",
-        "C++",
-        "Bash",
-      ],
-      frameworks_libraries: [
-        "React",
-        "Node.js",
-        "Express.js",
-        "FastAPI",
-        "Flask",
-        "Django",
-        "Next.js",
-        "Redux",
-        "jQuery",
-        "Bootstrap",
-        "Tailwind CSS",
-        "Jest",
-        "Pytest",
-        "Pandas",
-        "NumPy",
-        "Scikit-learn",
-        "Matplotlib",
-        "Seaborn",
-      ],
-      databases: ["PostgreSQL", "MongoDB", "MySQL", "SQLite", "Redis"],
-      cloud_tools: [
-        "AWS",
-        "Docker",
-        "Git",
-        "GitHub",
-        "GitLab",
-        "Heroku",
-        "Netlify",
-        "Vercel",
-        "Linux",
-        "Ubuntu",
-        "Nginx",
-      ],
-      other_skills: [
-        "RESTful APIs",
-        "GraphQL",
-        "Microservices",
-        "Agile",
-        "Scrum",
-        "Test Driven Development",
-        "CI/CD",
-        "Machine Learning",
-        "Data Analysis",
-        "Problem Solving",
-        "Team Collaboration",
-        "Code Review",
-        "System Design",
-        "Object-Oriented Programming",
-      ],
-    },
-    entities: {
-      names: ["Thomas Gollick", "Tom"],
-      organizations: [
-        "Manchester Metropolitan University",
-        "DSG Mortgages",
-        "TechFlow Solutions",
-        "GitHub",
-        "LinkedIn",
-        "AWS",
-        "Google",
-        "Microsoft",
-        "Meta",
-      ],
-      dates: [
-        "2024",
-        "2021-2024",
-        "June 2024",
-        "September 2023",
-        "January 2024",
-        "Summer 2024",
-        "2023",
-        "2022",
-      ],
-      locations: [
-        "Manchester",
-        "UK",
-        "United Kingdom",
-        "London",
-        "Birmingham",
-        "Leeds",
-        "Remote",
-      ],
-    },
-    experience_indicators: [
-      "Recent Computer Science graduate",
-      "3+ years of programming experience",
-      "Built full-stack web applications",
-      "Experience with modern development practices",
-      "Freelance web development projects",
-      "University project team leadership",
-      "Open source contributions",
-      "Internship experience",
-      "Commercial project delivery",
-    ],
-    education_info: [
-      "BSc Computer Science - First Class Honours",
-      "Manchester Metropolitan University (2021-2024)",
-      "Relevant modules: Software Engineering, Database Systems, Web Development",
-      "Machine Learning and Artificial Intelligence",
-      "Data Structures and Algorithms",
-      "Computer Networks and Security",
-      "Final year project: Career Copilot - AI Job Application Assistant",
-      "A-Levels: Mathematics (A), Computer Science (A), Physics (B)",
-    ],
-  };
+  const [cv]: CvAnalysis[] = await db.select().from(cvAnalyses).where(eq(cvAnalyses.userId, userId)).limit(1);
+
+  const results = cv.analysisData;
+
+  if(!results) {
+    return NextResponse.json(
+      { error: "Cannot find users CV data to populate cover letter generation" },
+      { status: 401 },
+    )
+  }
+
+  const contact = `${results.contact_info?.email} | ${results.contact_info?.phone} | ${results.contact_info?.linkedin}`
 
   // Generate cover letter using job + user data
   const coverLetter = await generateCoverLetter(results, job, companyInfo);
@@ -185,14 +53,13 @@ export async function POST(req: Request) {
   return NextResponse.json({
     coverLetter,
     companyName: companyInfo.name,
-    candidateContact: `${results.contact_info.email} | +44 7848 029531 | ${results.contact_info.linkedin}`,
+    candidateContact: contact,
     candidateName: results.entities.names[0],
   });
 }
 
-// Example helper
 async function generateCoverLetter(
-  user_profile: CVAnalysisResults,
+  user_profile: CVAnalysisData, // ✅ Changed from CVAnalysisResults
   job: Job,
   company: Company
 ) {
@@ -207,11 +74,7 @@ Contact: ${user_profile?.contact_info?.email || ""}, ${
   }
 LinkedIn: ${user_profile?.contact_info?.linkedin || ""}
 GitHub: ${user_profile?.contact_info?.github || ""}
-Location: ${
-    user_profile?.entities?.locations?.[0] ||
-    user_profile?.contact_info?.location ||
-    "UK"
-  }
+Location: ${user_profile?.entities?.locations?.[0] || "UK"}
 
 **Technical Skills**
 - Programming Languages: ${(
