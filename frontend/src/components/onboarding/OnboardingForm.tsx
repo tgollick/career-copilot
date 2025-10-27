@@ -1,361 +1,446 @@
-// frontend/src/components/onboarding/OnboardingForm.tsx
-"use client";
+"use client"
 
-import React, { useState } from "react";
-import { useRouter } from "next/navigation";
-import type { CVAnalysisData } from "@/db/schema";
+import { useRouter } from "next/navigation"
+import { useForm } from "react-hook-form"
+import { zodResolver } from "@hookform/resolvers/zod"
+import * as z from "zod"
+import type { CVAnalysisData } from "@/db/schema"
+import { Button } from "@/components/ui/button"
+import { Input } from "@/components/ui/input"
+import { Textarea } from "@/components/ui/textarea"
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  User,
+  Mail,
+  Phone,
+  MapPin,
+  Linkedin,
+  Github,
+  Code,
+  Database,
+  Cloud,
+  Briefcase,
+  GraduationCap,
+  ArrowLeft,
+  CheckCircle2,
+  Loader2,
+} from "lucide-react"
+import { useState } from "react"
 
-type OnboardingStep = "loading" | "upload" | "review";
+type OnboardingStep = "loading" | "upload" | "review"
 
 type OnboardingFormProps = {
-  cvAnalysis: CVAnalysisData;
-  onComplete: () => void;
-  setStep: (step: OnboardingStep) => void;
-};
+  cvAnalysis: CVAnalysisData
+  onComplete: () => void
+  setStep: (step: OnboardingStep) => void
+}
 
-export default function OnboardingForm({
-  cvAnalysis,
-  onComplete,
-  setStep,
-}: OnboardingFormProps) {
-  const router = useRouter();
-  const [loading, setLoading] = useState(false);
-  const [error, setError] = useState("");
+const formSchema = z.object({
+  // Contact Info
+  email: z.string().email("Please enter a valid email address"),
+  phone: z.string().optional(),
+  linkedin: z.string().optional(),
+  github: z.string().optional(),
+  location: z.string().optional(),
+  // Personal Info
+  fullName: z.string().min(1, "Full name is required"),
+  // Skills
+  programmingLanguages: z.string().optional(),
+  frameworks: z.string().optional(),
+  databases: z.string().optional(),
+  cloudTools: z.string().optional(),
+  // Experience & Education
+  objective: z.string().optional(),
+  experienceLevel: z.string().optional(),
+  education: z.string().optional(),
+})
 
-  // Form state - pre-filled from CV analysis
-  const [formData, setFormData] = useState({
-    // Contact Info
-    email: cvAnalysis.contact_info.email || "",
-    phone: cvAnalysis.contact_info.phone || "",
-    linkedin: cvAnalysis.contact_info.linkedin || "",
-    github: cvAnalysis.contact_info.github || "",
-    location: cvAnalysis.entities.locations[0] || "",
+type FormValues = z.infer<typeof formSchema>
 
-    // Personal Info
-    fullName: cvAnalysis.entities.names[0] || "",
+export default function OnboardingForm({ cvAnalysis, onComplete, setStep }: OnboardingFormProps) {
+  const router = useRouter()
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState("")
 
-    // Skills - join arrays for display
-    programmingLanguages: cvAnalysis.skills.programming_languages.join(", "),
-    frameworks: cvAnalysis.skills.frameworks_libraries.join(", "),
-    databases: cvAnalysis.skills.databases.join(", "),
-    cloudTools: cvAnalysis.skills.cloud_tools.join(", "),
-    // Experience & Education
-    objective: cvAnalysis.sections.objective || "",
-    experienceLevel: cvAnalysis.experience_indicators[0] || "",
-    education: cvAnalysis.education_info[0] || "",
-  });
+  const form = useForm<FormValues>({
+    resolver: zodResolver(formSchema),
+    defaultValues: {
+      email: cvAnalysis.contact_info.email || "",
+      phone: cvAnalysis.contact_info.phone || "",
+      linkedin: cvAnalysis.contact_info.linkedin || "",
+      github: cvAnalysis.contact_info.github || "",
+      location: cvAnalysis.entities.locations[0] || "",
+      fullName: cvAnalysis.entities.names[0] || "",
+      programmingLanguages: cvAnalysis.skills.programming_languages.join(", "),
+      frameworks: cvAnalysis.skills.frameworks_libraries.join(", "),
+      databases: cvAnalysis.skills.databases.join(", "),
+      cloudTools: cvAnalysis.skills.cloud_tools.join(", "),
+      objective: cvAnalysis.sections.objective || "",
+      experienceLevel: cvAnalysis.experience_indicators[0] || "",
+      education: cvAnalysis.education_info[0] || "",
+    },
+  })
 
-  const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-  ) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  const validateForm = () => {
-    // Basic validation
-    if (!formData.email || !formData.fullName) {
-      setError("Name and email are required");
-      return false;
-    }
-
-    if (!formData.email.includes("@")) {
-      setError("Please enter a valid email");
-      return false;
-    }
-
-    return true;
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setError("");
-
-    if (!validateForm()) {
-      return;
-    }
-
-    setLoading(true);
+  const onSubmit = async (values: FormValues) => {
+    setError("")
+    setLoading(true)
 
     try {
-      // Save the edited profile data to database
       const response = await fetch("/api/user/profile", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(formData), // Send as JSON
-      });
+        body: JSON.stringify(values),
+      })
 
       if (!response.ok) {
-        const data = await response.json();
-        throw new Error(data.error || "Failed to save profile");
+        const data = await response.json()
+        throw new Error(data.error || "Failed to save profile")
       }
 
-      // Mark onboarding as complete
-      onComplete();
-
-      // Redirect to dashboard
-      router.push("/");
+      onComplete()
+      router.push("/")
     } catch (err) {
-      console.error("Error completing onboarding:", err);
-      setError(
-        err instanceof Error ? err.message : "Failed to complete onboarding"
-      );
+      console.error("Error completing onboarding:", err)
+      setError(err instanceof Error ? err.message : "Failed to complete onboarding")
     } finally {
-      setLoading(false);
+      setLoading(false)
     }
-  };
+  }
 
   return (
-    <form onSubmit={handleSubmit} className="w-full max-w-2xl">
-      <div className="bg-neutral-900 rounded-lg p-8 space-y-6">
-        {/* Header */}
-        <div className="text-center mb-6">
-          <h2 className="text-3xl font-bold mb-2">Review Your Profile</h2>
-          <p className="text-neutral-400">
-            We&apos;ve pre-filled your information from your CV. Please review
-            and make any necessary changes.
-          </p>
+    <Form {...form}>
+      <form onSubmit={form.handleSubmit(onSubmit)} className="w-full max-w-3xl">
+        <div className="relative group">
+          <div className="absolute -inset-0.5 bg-gradient-to-r from-primary to-accent rounded-2xl opacity-20 group-hover:opacity-30 transition-opacity blur"></div>
+          <div className="relative bg-card border border-border rounded-2xl p-8 shadow-2xl">
+            {/* Header */}
+            <div className="text-center mb-8">
+              <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-primary/10 mb-4">
+                <User className="w-8 h-8 text-primary" />
+              </div>
+              <h2 className="text-3xl font-bold mb-3 bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">
+                Review Your Profile
+              </h2>
+              <p className="text-muted-foreground max-w-xl mx-auto">
+                We&apos;ve pre-filled your information from your CV. Please review and make any necessary changes.
+              </p>
+            </div>
+
+            {/* Error Message */}
+            {error && (
+              <div className="mb-6 p-4 bg-destructive/10 border border-destructive/50 rounded-lg">
+                <p className="text-destructive font-medium">{error}</p>
+              </div>
+            )}
+
+            <div className="space-y-8">
+              {/* Personal Information Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <User className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Personal Information</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="fullName"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <User className="w-4 h-4 text-muted-foreground" />
+                          Full Name <span className="text-destructive">*</span>
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="email"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Mail className="w-4 h-4 text-muted-foreground" />
+                            Email <span className="text-destructive">*</span>
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="email" {...field} className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="phone"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Phone className="w-4 h-4 text-muted-foreground" />
+                            Phone
+                          </FormLabel>
+                          <FormControl>
+                            <Input type="tel" {...field} className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="linkedin"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Linkedin className="w-4 h-4 text-muted-foreground" />
+                            LinkedIn
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="linkedin.com/in/yourprofile" className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="github"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Github className="w-4 h-4 text-muted-foreground" />
+                            GitHub
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="github.com/yourusername" className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+
+                  <FormField
+                    control={form.control}
+                    name="location"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <MapPin className="w-4 h-4 text-muted-foreground" />
+                          Location
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="City, Country" className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+
+              {/* Skills Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Code className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Technical Skills</h3>
+                </div>
+                <p className="text-sm text-muted-foreground mb-4">Separate multiple skills with commas</p>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="programmingLanguages"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Code className="w-4 h-4 text-muted-foreground" />
+                          Programming Languages
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="Python, JavaScript, TypeScript" className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="frameworks"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Code className="w-4 h-4 text-muted-foreground" />
+                          Frameworks & Libraries
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="React, Node.js, Django" className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <FormField
+                      control={form.control}
+                      name="databases"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Database className="w-4 h-4 text-muted-foreground" />
+                            Databases
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="PostgreSQL, MongoDB" className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+
+                    <FormField
+                      control={form.control}
+                      name="cloudTools"
+                      render={({ field }) => (
+                        <FormItem>
+                          <FormLabel className="flex items-center gap-2">
+                            <Cloud className="w-4 h-4 text-muted-foreground" />
+                            Cloud & Tools
+                          </FormLabel>
+                          <FormControl>
+                            <Input {...field} placeholder="AWS, Docker, Git" className="h-11" />
+                          </FormControl>
+                          <FormMessage />
+                        </FormItem>
+                      )}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              {/* Professional Summary Section */}
+              <div className="space-y-4">
+                <div className="flex items-center gap-2 mb-4">
+                  <div className="w-8 h-8 rounded-lg bg-primary/10 flex items-center justify-center">
+                    <Briefcase className="w-4 h-4 text-primary" />
+                  </div>
+                  <h3 className="text-xl font-semibold">Professional Profile</h3>
+                </div>
+
+                <div className="space-y-4">
+                  <FormField
+                    control={form.control}
+                    name="objective"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Briefcase className="w-4 h-4 text-muted-foreground" />
+                          Professional Summary
+                        </FormLabel>
+                        <FormControl>
+                          <Textarea
+                            {...field}
+                            rows={4}
+                            placeholder="Brief description of your professional background and career goals"
+                            className="resize-none"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="experienceLevel"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <Briefcase className="w-4 h-4 text-muted-foreground" />
+                          Experience Level
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., 3+ years of experience" className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+
+                  <FormField
+                    control={form.control}
+                    name="education"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="flex items-center gap-2">
+                          <GraduationCap className="w-4 h-4 text-muted-foreground" />
+                          Highest Education
+                        </FormLabel>
+                        <FormControl>
+                          <Input {...field} placeholder="e.g., BSc Computer Science" className="h-11" />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Submit Buttons */}
+            <div className="flex flex-col sm:flex-row gap-4 mt-8 pt-6 border-t border-border">
+              <Button
+                type="button"
+                onClick={() => setStep("upload")}
+                disabled={loading}
+                variant="outline"
+                className="flex-1 h-12"
+              >
+                <ArrowLeft className="mr-2 h-4 w-4" />
+                Back
+              </Button>
+
+              <Button type="submit" disabled={loading} className="flex-1 h-12 font-semibold">
+                {loading ? (
+                  <>
+                    <Loader2 className="mr-2 h-5 w-5 animate-spin" />
+                    Completing...
+                  </>
+                ) : (
+                  <>
+                    <CheckCircle2 className="mr-2 h-5 w-5" />
+                    Complete Onboarding
+                  </>
+                )}
+              </Button>
+            </div>
+
+            {/* Privacy Note */}
+            <p className="text-xs text-muted-foreground text-center mt-6">
+              By completing onboarding, you agree to our Terms of Service and Privacy Policy. Your data is securely
+              stored and never shared without your permission.
+            </p>
+          </div>
         </div>
-
-        {/* Error Message */}
-        {error && (
-          <div className="p-4 bg-red-900/50 border border-red-500 rounded-md">
-            <p className="text-red-200">{error}</p>
-          </div>
-        )}
-
-        {/* Personal Information Section */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-white">
-            Personal Information
-          </h3>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Full Name <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="fullName"
-              value={formData.fullName}
-              onChange={handleChange}
-              required
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Email <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="email"
-                name="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">Phone</label>
-              <input
-                type="tel"
-                name="phone"
-                value={formData.phone}
-                onChange={handleChange}
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">LinkedIn</label>
-              <input
-                type="text"
-                name="linkedin"
-                value={formData.linkedin}
-                onChange={handleChange}
-                placeholder="linkedin.com/in/yourprofile"
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">GitHub</label>
-              <input
-                type="text"
-                name="github"
-                value={formData.github}
-                onChange={handleChange}
-                placeholder="github.com/yourusername"
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">Location</label>
-            <input
-              type="text"
-              name="location"
-              value={formData.location}
-              onChange={handleChange}
-              placeholder="City, Country"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Skills Section */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-white">
-            Technical Skills
-          </h3>
-          <p className="text-sm text-gray-400">
-            Separate multiple skills with commas
-          </p>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Programming Languages
-            </label>
-            <input
-              type="text"
-              name="programmingLanguages"
-              value={formData.programmingLanguages}
-              onChange={handleChange}
-              placeholder="Python, JavaScript, TypeScript"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Frameworks & Libraries
-            </label>
-            <input
-              type="text"
-              name="frameworks"
-              value={formData.frameworks}
-              onChange={handleChange}
-              placeholder="React, Node.js, Django"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Databases
-              </label>
-              <input
-                type="text"
-                name="databases"
-                value={formData.databases}
-                onChange={handleChange}
-                placeholder="PostgreSQL, MongoDB"
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Cloud & Tools
-              </label>
-              <input
-                type="text"
-                name="cloudTools"
-                value={formData.cloudTools}
-                onChange={handleChange}
-                placeholder="AWS, Docker, Git"
-                className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Professional Summary Section */}
-        <div className="space-y-4">
-          <h3 className="text-xl font-semibold text-white">
-            Professional Profile
-          </h3>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Professional Summary
-            </label>
-            <textarea
-              name="objective"
-              value={formData.objective}
-              onChange={handleChange}
-              rows={4}
-              placeholder="Brief description of your professional background and career goals"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Experience Level
-            </label>
-            <input
-              type="text"
-              name="experienceLevel"
-              value={formData.experienceLevel}
-              onChange={handleChange}
-              placeholder="e.g., 3+ years of experience"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Highest Education
-            </label>
-            <input
-              type="text"
-              name="education"
-              value={formData.education}
-              onChange={handleChange}
-              placeholder="e.g., BSc Computer Science"
-              className="w-full px-4 py-2 bg-neutral-800 border border-neutral-700 rounded-md focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-          </div>
-        </div>
-
-        {/* Submit Button */}
-        <div className="flex gap-4 pt-6">
-          <button
-            type="button"
-            onClick={() => setStep("upload")}
-            disabled={loading}
-            className="flex-1 px-6 py-3 bg-neutral-700 hover:bg-neutral-600 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            Back
-          </button>
-
-          <button
-            type="submit"
-            disabled={loading}
-            className="flex-1 px-6 py-3 bg-purple-600 hover:bg-purple-700 rounded-md font-semibold disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
-          >
-            {loading ? "Completing..." : "Complete Onboarding"}
-          </button>
-        </div>
-
-        {/* Privacy Note */}
-        <p className="text-xs text-neutral-500 text-center mt-4">
-          By completing onboarding, you agree to our Terms of Service and
-          Privacy Policy. Your data is securely stored and never shared without
-          your permission.
-        </p>
-      </div>
-    </form>
-  );
+      </form>
+    </Form>
+  )
 }
+
