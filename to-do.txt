@@ -1,0 +1,14 @@
+Still to do before happy with complete project:
+
+Frontend:
+- Loading animations/states cleaned up
+- Ensure user experience/flow is nailed
+- Sort out the double loading problem with /jobs
+
+Backend
+- Potentially better extraction for contact info/name of user but not a must as they have manual oversight
+
+General
+- Sort out a organised well thought out readme
+- Use Claude as an oversight to any potential errors I have somehow not spotted/best practices etc.
+
