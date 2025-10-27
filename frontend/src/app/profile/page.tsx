@@ -8,6 +8,7 @@ import { MatchJobsButton } from "@/components/MatchJobsButton";
 import DisplayCV from "@/components/profile/DisplayCV";
 import { Badge } from "@/components/ui/badge"
 import { AlertCircle, Briefcase, CheckCircle2, MapPin, Sparkles, TrendingUp } from "lucide-react";
+import DeleteCVButton from "@/components/profile/DeleteCVButton";
 
 const ProfilePage = async () => {
   const { userId } = await auth();
@@ -164,6 +165,8 @@ const ProfilePage = async () => {
                       <strong>Note:</strong> To recalculate your matches, delete your current CV and upload a new one.
                     </p>
                   </div>
+
+                  <DeleteCVButton />
                 </div>
               ) : (
                 <div className="space-y-6">
@@ -174,6 +177,7 @@ const ProfilePage = async () => {
                   </p>
 
                   <MatchJobsButton disabled={!hasAnalysis} />
+
 
                   {!hasAnalysis && (
                     <div className="p-4 bg-muted/30 border border-border rounded-xl">
