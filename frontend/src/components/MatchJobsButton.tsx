@@ -40,7 +40,7 @@ export function MatchJobsButton({ disabled }: MatchJobsButtonProps) {
   };
 
   return (
-    <div className="space-y-3">
+    <div className="space-y-3 w-full text-center">
       <Button
         onClick={handleMatchJobs}
         disabled={disabled || isLoading}

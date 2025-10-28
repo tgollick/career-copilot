@@ -149,14 +149,15 @@
 from fastapi import FastAPI, File, UploadFile, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
+
 import tempfile
 import os
 from pydantic import BaseModel
 from typing import Dict, List
-from ml.balance_cv_weight import balance_cv_weights
-import numpy as np
 
-from ml.tfidf import TFIDFFromScratch, calculate_similarity_results
+from ml.balance_cv_weight import balance_cv_weights
+from ml.tfidf import TFIDFFromScratch 
+from ml.job_matcher import calculate_similarity_results
 from ml.cv_parser import extract_cv_text
 from ml.cv_analysis import CVAnalyser
 from ml.exceptions import CVAnalysisError, PDFPassingError, InsufficientDataError
@@ -198,6 +199,7 @@ async def health_check():
     try:
         # Test if spaCy model is loaded
         test_doc = cv_analyser.nlp("test")
+
         return {
             "status": "healthy",
             "spacy_model": "loaded",

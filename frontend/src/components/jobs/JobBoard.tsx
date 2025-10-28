@@ -29,6 +29,13 @@ const JobBoard = (props: Props) => {
   const [loading, setLoading] = useState(true);
 
   const hasFetchedInitial = useRef(false);
+  
+  const prevFilters = useRef({
+    location: "",
+    searchTerm: "",
+    minSalary: 0,
+    maxSalary: 0,
+  });
 
   const fetchJobs = async (
     page: number,
@@ -66,12 +73,29 @@ const JobBoard = (props: Props) => {
     }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     if (!hasFetchedInitial.current) {
       hasFetchedInitial.current = true;
       fetchJobs(1);
-      return;     
     }
+  }, []);
+
+  useEffect(() => {
+    if (!hasFetchedInitial.current) {
+      return;
+    }
+
+    const filtersChanged =
+      location !== prevFilters.current.location ||
+      searchTerm !== prevFilters.current.searchTerm ||
+      minSalary !== prevFilters.current.minSalary ||
+      maxSalary !== prevFilters.current.maxSalary;
+
+    if (!filtersChanged) {
+      return; 
+    }
+
+    prevFilters.current = { location, searchTerm, minSalary, maxSalary };
 
     const timeoutId = setTimeout(() => {
       fetchJobs(1, { location, searchTerm, minSalary, maxSalary });

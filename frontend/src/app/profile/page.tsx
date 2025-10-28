@@ -169,7 +169,7 @@ const ProfilePage = async () => {
                   <DeleteCVButton />
                 </div>
               ) : (
-                <div className="space-y-6">
+                <div className="space-y-6 w-full">
                   <p className="text-muted-foreground">
                     {hasAnalysis
                       ? "Click the button below to match your CV against our database of available jobs. Our AI-powered algorithm will find the best opportunities for you."
