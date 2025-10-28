@@ -28,7 +28,7 @@ const JobBoard = (props: Props) => {
   const [maxSalary, setMaxSalary] = useState<number>(0);
   const [loading, setLoading] = useState(true);
 
-  const isFirstRender = useRef(true);
+  const hasFetchedInitial = useRef(false);
 
   const fetchJobs = async (
     page: number,
@@ -66,26 +66,20 @@ const JobBoard = (props: Props) => {
     }
   };
 
-  useEffect(() => {
-    fetchJobs(1);
-  }, [])
-
-  // Debounced effect - only fires 500ms after user stops typing
-  useEffect(() => {
-    if (isFirstRender.current) {
-      isFirstRender.current = false;
-      return;
+    useEffect(() => {
+    if (!hasFetchedInitial.current) {
+      hasFetchedInitial.current = true;
+      fetchJobs(1);
+      return;     
     }
 
     const timeoutId = setTimeout(() => {
       fetchJobs(1, { location, searchTerm, minSalary, maxSalary });
-    }, 1000); // 500ms delay (adjust as needed)
+    }, 1000);
 
-    // Cleanup function - cancels the previous timeout
     return () => clearTimeout(timeoutId);
   }, [location, searchTerm, minSalary, maxSalary]);
 
-  // Handlers now just update state (no API calls)
   const handleLocationChange = (newLocation: string) => {
     setLocation(newLocation);
   };
