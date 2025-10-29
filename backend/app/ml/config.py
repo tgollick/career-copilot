@@ -18,29 +18,177 @@ class AppConfig:
 
 # Storing all configuration variables for improved code re-useability, maintainability and modularity
 
-# Individual skill sets remain as sets for easy updates
+# PROGRAMMING LANGUAGES
+# Languages that are used to write code, including general-purpose, scripting, and domain-specific languages
+# Note: SQL and GraphQL are included here as query languages, though they could arguably go elsewhere
 programming_languages = {
+    # Mainstream general-purpose languages
     'python', 'javascript', 'typescript', 'java', 'c#', 'c++', 'c',
-    'go', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'scala', 'r',
-    'matlab', 'perl', 'shell', 'bash', 'powershell', 'visual basic'
+    'go', 'golang', 'rust', 'php', 'ruby', 'swift', 'kotlin', 'scala',
+    
+    # Data science and statistical languages
+    'r', 'julia', 'matlab', 'octave',
+    
+    # Scripting and shell languages
+    'bash', 'shell', 'powershell', 'perl', 'lua',
+    
+    # Legacy and specialized languages
+    'cobol', 'fortran', 'pascal', 'visual basic', 'vb', 'vba',
+    'objective-c', 'objective c',
+    
+    # Functional languages
+    'haskell', 'elixir', 'erlang', 'clojure', 'lisp', 'scheme', 'f#',
+    
+    # Systems and low-level languages
+    'assembly', 'asm',
+    
+    # Query languages (treated as languages since they have syntax and semantics)
+    'sql', 'plsql', 'tsql', 'graphql',
+    
+    # Markup and data languages (often listed as language skills)
+    'html', 'css', 'xml', 'yaml', 'json',
+    
+    # JVM languages
+    'groovy', 'jython',
+    
+    # Mobile-specific languages
+    'dart',
+    
+    # Emerging languages
+    'zig', 'nim', 'crystal', 'webassembly', 'wasm'
 }
 
 frameworks_libraries = {
-    'react', 'angular', 'vue', 'node.js', 'express', 'next.js',
-    'django', 'flask', 'spring', 'laravel', '.net', 'jquery',
-    'bootstrap', 'tailwind', 'redux', 'numpy', 'pandas', 'scipy',
-    'scikit-learn', 'tensorflow', 'pytorch', 'keras'
+    'react', 'reactjs', 'angular', 'angularjs', 'vue', 'vuejs', 'svelte',
+    'solid', 'solidjs', 'preact', 'ember', 'emberjs', 'backbone', 'backbonejs',
+    'next', 'nextjs', 'next.js', 'nuxt', 'nuxtjs', 'gatsby', 'remix',
+    
+    'node', 'nodejs', 'node.js', 'express', 'expressjs', 'fastify', 'koa',
+    'nestjs', 'nest', 'hapi', 'sails', 'meteor',
+    
+    'redux', 'mobx', 'recoil', 'zustand', 'jotai',
+    
+    'jest', 'mocha', 'jasmine', 'cypress', 'playwright', 'puppeteer',
+    'enzyme', 'testing library', 'vitest',
+    
+    'webpack', 'vite', 'rollup', 'parcel', 'esbuild', 'turbopack',
+    
+    'tailwind', 'tailwindcss', 'bootstrap', 'material-ui', 'mui',
+    'ant design', 'antd', 'chakra', 'semantic ui', 'bulma',
+    'sass', 'scss', 'less', 'styled-components', 'emotion',
+    
+    'jquery',
+    
+    'django', 'flask', 'fastapi', 'tornado', 'pyramid', 'bottle',
+    'streamlit', 'gradio', 'dash',
+    
+    'celery', 'asyncio', 'aiohttp',
+    
+    'numpy', 'pandas', 'scipy', 'matplotlib', 'seaborn', 'plotly',
+    
+    'scikit-learn', 'sklearn', 'scikit', 'tensorflow', 'pytorch', 'keras',
+    'opencv', 'pil', 'pillow',
+    
+    'beautifulsoup', 'scrapy',
+    
+    'huggingface', 'transformers', 'langchain', 'spacy',
+    'nltk', 'gensim', 'xgboost', 'lightgbm', 'catboost',
+    
+    'spring', 'spring boot', 'springboot', 'hibernate', 'struts',
+    'jsf', 'jax-rs', 'jersey', 'micronaut', 'quarkus',
+    
+    '.net', 'dotnet', 'asp.net', 'aspnet', 'blazor', 'xamarin',
+    'entity framework', 'ef core',
+    
+    'laravel', 'symfony', 'codeigniter', 'yii', 'cakephp', 'wordpress',
+    
+    'rails', 'ruby on rails', 'sinatra',
+    
+    'gin', 'echo', 'fiber', 'beego',
+    
+    'react native', 'flutter', 'ionic', 'cordova', 'capacitor',
+    'swiftui', 'jetpack compose',
+    
+    'selenium', 'junit', 'testng', 'pytest', 'unittest', 'rspec',
+    
+    'sequelize', 'typeorm', 'prisma', 'mongoose', 'sqlalchemy',
+    
+    'socket.io', 'socketio', 'websockets', 'signalr'
 }
 
 databases = {
-    'mysql', 'postgresql', 'mongodb', 'sqlite', 'redis', 'oracle',
-    'sql server', 'dynamodb', 'cassandra', 'elasticsearch'
+    'mysql', 'postgresql', 'postgres', 'sqlite', 'oracle',
+    'sql server', 'mssql', 'mariadb', 'db2', 'sybase',
+    
+    'mongodb', 'mongo', 'couchdb', 'couchbase',
+    
+    'redis', 'memcached', 'etcd',
+    
+    'cassandra', 'hbase', 'scylla',
+    
+    'neo4j', 'arangodb', 'dgraph',
+    
+    'elasticsearch', 'elastic', 'solr', 'algolia', 'meilisearch',
+    
+    'influxdb', 'timescaledb', 'prometheus',
+    
+    'pinecone', 'weaviate', 'qdrant', 'milvus', 'chroma',
+    
+    'dynamodb', 'cosmosdb', 'firestore', 'fauna',
+    
+    'snowflake', 'redshift', 'bigquery', 'databricks'
 }
 
+
 cloud_tools = {
-    'aws', 'azure', 'gcp', 'docker', 'kubernetes', 'jenkins',
-    'git', 'github', 'gitlab', 'bitbucket', 'vercel', 'netlify',
-    'heroku', 'firebase', 'terraform'
+    'aws', 'amazon web services', 'azure', 'microsoft azure',
+    'gcp', 'google cloud', 'google cloud platform',
+    
+    'ec2', 's3', 'lambda', 'rds', 'cloudformation', 'cloudwatch',
+    'sqs', 'sns', 'api gateway', 'cognito', 'ecs', 'eks',
+    
+    'azure functions', 'azure devops', 'azure sql',
+    
+    'compute engine', 'cloud functions', 'cloud run',
+    
+    'docker', 'podman', 'containerd',
+    
+    'kubernetes', 'k8s', 'openshift', 'rancher', 'nomad',
+    'docker swarm', 'docker compose',
+    
+    'jenkins', 'github actions', 'gitlab ci', 'circleci', 'travis ci',
+    'teamcity', 'bamboo', 'azure pipelines', 'codepipeline',
+    'drone', 'spinnaker', 'argo', 'argocd',
+    
+    'terraform', 'ansible', 'puppet', 'chef', 'saltstack',
+    'pulumi', 'cdk',
+    
+    'git', 'github', 'gitlab', 'bitbucket', 'svn', 'mercurial',
+    
+    'grafana', 'datadog', 'new relic', 'splunk',
+    'logstash', 'kibana', 'fluentd',
+    'sentry', 'pagerduty', 'dynatrace',
+    
+    'nginx', 'apache', 'haproxy', 'traefik',
+    
+    'istio', 'linkerd', 'consul', 'envoy',
+    
+    'heroku', 'vercel', 'netlify', 'render', 'railway',
+    'fly.io', 'digitalocean', 'linode',
+    
+    'serverless', 'sam', 'amplify',
+    
+    'vault',
+    
+    'kong', 'apigee', 'tyk',
+    
+    'kafka', 'rabbitmq', 'activemq', 'nats', 'pulsar',
+    'kinesis', 'event bridge',
+    
+    'firebase', 'firebase auth',
+    
+    'postman', 'insomnia', 'swagger', 'jira', 'confluence',
+    'slack', 'notion'
 }
 
 # Combining all sub-skills into a single set for use in the TFIDF module

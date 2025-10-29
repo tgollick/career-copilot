@@ -55,7 +55,7 @@ class TFIDFFromScratch:
                 filtered_words.append(word * 3)
             elif word in experience_indicators:
                 filtered_words.append(word * 2)
-            if word in job_terms:
+            elif word in job_terms:
                 filtered_words.append(word)
         
         return filtered_words

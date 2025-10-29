@@ -14,32 +14,42 @@
     },
     "skills": {
         "programming_languages": [
-            "GO",
-            "Python",
-            "Visual Basic",
-            "Javascript",
+            "Sql",
             "Java",
+            "Javascript",
+            "C",
+            "Lua",
+            "Visual Basic",
+            "Python",
+            "GO",
             "Typescript",
-            "C"
+            "Css"
         ],
         "frameworks_libraries": [
+            "Scikit-Learn",
+            "Pandas",
+            "Node",
+            "Scikit",
+            "Redux",
+            "Node.Js",
+            "Next",
+            "Tailwind",
             "React",
+            "Less",
+            ".Net",
             "Numpy",
             "Next.Js",
-            "Scikit-Learn",
-            "Redux",
-            "Tailwind",
-            "Node.Js",
-            ".Net",
-            "Pandas"
+            "Solid"
         ],
         "databases": [
-            "Mongodb"
+            "Mongodb",
+            "Mongo"
         ],
         "cloud_tools": [
+            "Github",
             "Vercel",
             "Git",
-            "Github"
+            "Rds"
         ],
         "other_skills": []
     },
@@ -59,7 +69,6 @@
         "locations": [
             "London",
             "Chatham",
-            "Scikit",
             "NoSQL"
         ]
     },

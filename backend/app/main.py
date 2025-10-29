@@ -156,7 +156,7 @@ from pydantic import BaseModel
 from typing import Dict, List
 import json
 
-from ml.balance_cv_weight import balance_cv_weights
+from ml.balance_cv_weight import flatten_analysis
 from ml.tfidf import TFIDFFromScratch 
 from ml.job_matcher import calculate_similarity_results
 from ml.cv_parser import extract_cv_text
@@ -342,9 +342,9 @@ async def generate_similarity(request: MatchJobRequest):
                     detail="No CV analysis provided in the request"
                     )
 
-        weighted_cv_text = balance_cv_weights(request.cv_analysis)
+        flattened_analysis = flatten_analysis(request.cv_analysis)
 
-        all_documents = [weighted_cv_text] + request.job_descriptions
+        all_documents = [flattened_analysis] + request.job_descriptions
 
         results, vocabulary, tfidf_matrix = calculate_similarity_results(all_documents)
 
