@@ -263,8 +263,9 @@ export type NewJobSimilarities = typeof jobSimilarities.$inferInsert;
 // Base job type inferred from schema
 export type Job = InferSelectModel<typeof jobs>;
 
-// Job with optional similarity data (for API responses)
+// Job with optional similarity data and company name (for API responses)
 export type JobWithSimilarity = Job & {
+  companyName: string | null; 
   similarity: string | null;
   matchQuality: string | null;
 };

@@ -29,20 +29,20 @@ export async function GET(req: NextRequest) {
 
     const values = similarities.map(row => row.similarity);
     
-    const excellent = values.filter((value) => parseFloat(value) >= 0.45).length;
+    const excellent = values.filter((value) => parseFloat(value) >= 0.35).length;
     const good = values.filter((value) => {
       const num = parseFloat(value);
-      return num > 0.35 && num < 0.45;
+      return num >= 0.28 && num <= 0.34;
     }).length;
     const ok = values.filter((value) => {
       const num = parseFloat(value);
-      return num > 0.25 && num < 0.35;
+      return num >= 0.20 && num <= 0.27;
     }).length;
     const bad = values.filter((value) => {
       const num = parseFloat(value);
-      return num > 0.15 && num < 0.25;
+      return num >= 0.12 && num <= 0.19;
     }).length;
-    const terrible = values.filter((value) => parseFloat(value) < 0.15).length
+    const terrible = values.filter((value) => parseFloat(value) <= 0.11).length
 
     const totalCount = values.length
 

@@ -1,7 +1,7 @@
 import { db } from "@/lib/index";
-import { jobs, jobSimilarities } from "@/db/schema";
+import { companies, jobs, jobSimilarities } from "@/db/schema";
 import { NextResponse, NextRequest } from "next/server";
-import { sql } from "drizzle-orm";
+import { getTableColumns, sql } from "drizzle-orm";
 import { and, gte, lte, ilike, or, eq, desc } from "drizzle-orm";
 import { auth } from "@clerk/nextjs/server";
 import { JobsApiResponse } from "@/db/schema"; 
@@ -48,55 +48,34 @@ export async function GET(request: NextRequest) {
 
     const jobsQuery = db
       .select({
-        // All Job fields - MUST include ALL fields from the jobs table
-        id: jobs.id,
-        companyId: jobs.companyId,
-        title: jobs.title,
-        description: jobs.description,
-        location: jobs.location,
-        remoteType: jobs.remoteType,
-        salaryMin: jobs.salaryMin,
-        salaryMax: jobs.salaryMax,
-        salaryCurrency: jobs.salaryCurrency,        // ← Added
-        employmentType: jobs.employmentType,
-        experienceLevel: jobs.experienceLevel,
-        skills: jobs.skills,
-        requirements: jobs.requirements,
-        isActive: jobs.isActive,                    // ← Added
-        postedAt: jobs.postedAt,
-        expiresAt: jobs.expiresAt,                  // ← Added
-        createdAt: jobs.createdAt,                  // ← Added
-        updatedAt: jobs.updatedAt,                  // ← Added
-        
-        // Similarity fields (will be null if no match or no userId)
-        similarity: userId ? jobSimilarities.similarity : sql<string | null>`null`,
-        matchQuality: userId ? jobSimilarities.matchQuality : sql<string | null>`null`,
+        ...getTableColumns(jobs),
+
+        companyName: companies.name,
+
+        similarity: jobSimilarities.similarity,
+        matchQuality: jobSimilarities.matchQuality,
       })
-      .from(jobs);
-
-    // Conditionally add left join only if userId exists
-    const queryWithJoin = userId
-      ? jobsQuery.leftJoin(
-          jobSimilarities,
-          and(
-            eq(jobSimilarities.jobId, jobs.id),
-            eq(jobSimilarities.userId, userId)
-          )
-        )
-      : jobsQuery;
-
-    // Apply filters, ordering, and pagination
-    const jobData = await queryWithJoin
+      .from(jobs)
+      .leftJoin(companies, eq(jobs.companyId, companies.id))
+      .leftJoin(
+        jobSimilarities,
+        userId 
+          ? and(
+              eq(jobSimilarities.jobId, jobs.id),
+              eq(jobSimilarities.userId, userId)
+            )
+          : sql`false`
+      )
       .where(conditions.length > 0 ? and(...conditions) : undefined)
       .orderBy(
-        // If similarities exist, order by similarity (desc, nulls last)
-        // Otherwise, order by postedAt
         userId
           ? sql`${jobSimilarities.similarity} DESC NULLS LAST, ${jobs.postedAt} DESC`
           : desc(jobs.postedAt)
       )
       .limit(validLimit)
       .offset(offset);
+
+    const jobData = await jobsQuery;
 
     const [{ count }] = await db
       .select({ count: sql<number>`count(*)::int` })

@@ -36,16 +36,13 @@ def get_similarity_description(cosine_similarity):
     Convert similarity score to human-readable description.
     Thresholds calibrated for comprehensive CV profiles with smart preprocessing.
     """
-    if cosine_similarity >= 0.50:
+    if cosine_similarity >= 0.35:
         return "Excellent Match"
-    elif cosine_similarity >= 0.35:
+    elif cosine_similarity >= 0.28:
         return "Strong Match"
-    elif cosine_similarity >= 0.25:
+    elif cosine_similarity >= 0.20:
         return "Good Match"
-    elif cosine_similarity >= 0.15:
+    elif cosine_similarity >= 0.12:
         return "Moderate Match"
-    elif cosine_similarity >= 0.08:
-        return "Weak Match"
     else:
-        return "No Match"
-
+        return "Weak Match"

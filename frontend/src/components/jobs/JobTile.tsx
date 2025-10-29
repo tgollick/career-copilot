@@ -87,7 +87,7 @@ const JobTile = (props: Props) => {
   };
 
   const similarity = props.job.similarity 
-    ? Math.round(parseFloat(props.job.similarity) * 100) 
+    ? props.job.similarity.toString() 
     : 0;
   const matchQuality = props.job.matchQuality ?? "Unknown";
 
@@ -101,7 +101,7 @@ const JobTile = (props: Props) => {
             <h2 className="text-2xl font-bold text-foreground leading-tight group-hover:text-primary transition-colors">
               {props.job.title}
             </h2>
-            <p className="text-base font-medium text-muted-foreground">Job Name 1</p>
+            <p className="text-base font-medium text-muted-foreground">{props.job.companyName}</p>
           </div>
 
           <Badge
@@ -109,7 +109,7 @@ const JobTile = (props: Props) => {
             className={`${getMatchStyles(matchQuality)} shrink-0 px-4 py-2 font-bold text-base shadow-lg flex items-center gap-2`}
           >
             <Sparkles className="h-4 w-4" />
-            {similarity}%
+            Cosine Similarity: {similarity}
           </Badge>
         </div>
 

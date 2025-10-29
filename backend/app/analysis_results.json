@@ -14,42 +14,42 @@
     },
     "skills": {
         "programming_languages": [
-            "Sql",
-            "Java",
-            "Javascript",
-            "C",
             "Lua",
-            "Visual Basic",
-            "Python",
+            "Sql",
+            "Css",
+            "C",
             "GO",
             "Typescript",
-            "Css"
+            "Java",
+            "Visual Basic",
+            "Python",
+            "Javascript"
         ],
         "frameworks_libraries": [
-            "Scikit-Learn",
-            "Pandas",
-            "Node",
-            "Scikit",
-            "Redux",
-            "Node.Js",
-            "Next",
             "Tailwind",
+            "Pandas",
             "React",
-            "Less",
-            ".Net",
+            "Node",
+            "Node.Js",
+            "Solid",
+            "Redux",
             "Numpy",
+            ".Net",
+            "Next",
             "Next.Js",
-            "Solid"
+            "Scikit-Learn",
+            "Less",
+            "Scikit"
         ],
         "databases": [
-            "Mongodb",
-            "Mongo"
+            "Mongo",
+            "Mongodb"
         ],
         "cloud_tools": [
-            "Github",
-            "Vercel",
             "Git",
-            "Rds"
+            "Vercel",
+            "Rds",
+            "Github"
         ],
         "other_skills": []
     },
