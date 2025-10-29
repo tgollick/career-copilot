@@ -51,32 +51,26 @@ export async function GET(req: NextRequest) {
         label: "Excellent", 
         count: excellent, 
         color: "bg-emerald-500", 
-        percentage: Math.round((excellent / totalCount) * 100) 
+        percentage: Math.round((excellent / (totalCount - terrible)) * 100) 
       },
       {
         label: "Good",
         count: good,
         color: "bg-blue-500",
-        percentage: Math.round((good / totalCount) * 100)
+        percentage: Math.round((good / (totalCount - terrible)) * 100)
       },
       {
         label: "Ok",
         count: ok,
         color: "bg-amber-500",
-        percentage: Math.round((ok / totalCount) * 100)
+        percentage: Math.round((ok / (totalCount - terrible)) * 100)
       },
       {
         label: "Bad",
         count: bad,
         color: "bg-slate-500",
-        percentage: Math.round((bad / totalCount) * 100)
+        percentage: Math.round((bad / (totalCount - terrible)) * 100)
       },
-      {
-        label: "Terrible",
-        count: terrible,
-        color: "bg-red-500",
-        percentage: Math.round((terrible / totalCount) * 100)
-      }
     ];
 
     return NextResponse.json(
