@@ -51,14 +51,25 @@ all_technical_skills = {
     *cloud_tools
 }
 
-# Misc and text pre-processing configuration variables
-jobs = [
-    "React developer needed. Must have JavaScript TypeScript experience. Node.js backend knowledge preferred.",
-    "Python Data Scientist role. Required: pandas numpy scikit-learn machine learning experience. PhD preferred.",
-    "Full Stack Engineer position. Technologies: React Node.js MongoDB JavaScript. Startup environment.",
-    "Java Enterprise Developer. Spring Boot microservices REST APIs. 5+ years experience required.",
-    "Frontend Developer role. React TypeScript Redux experience essential. Modern web development."
-]
+experience_indicators = {
+    'lead', 'led', 'leading', 'leadership', 'mentor', 'mentored', 'mentoring',
+    'manage', 'managed', 'managing', 'management', 'supervise', 'supervised',
+    'train', 'trained', 'training', 'coach', 'coached', 'coaching',
+    'architect', 'architecture', 'design', 'designed', 'designing',
+    'build', 'built', 'building', 'create', 'created', 'creating',
+    'develop', 'developed', 'developing', 'implement', 'implemented', 'implementing',
+    'scale', 'scaled', 'scaling', 'optimize', 'optimized', 'optimizing',
+    'performance', 'production', 'deploy', 'deployed', 'deployment',
+    'maintain', 'maintained', 'maintenance', 'support', 'supported',
+    'deliver', 'delivered', 'delivering', 'ship', 'shipped', 'shipping',
+    'launch', 'launched', 'launching', 'release', 'released', 'releasing',
+    'complete', 'completed', 'completing', 'finish', 'finished',
+    'collaborate', 'collaborated', 'collaboration', 'coordinate', 'coordinated',
+    'integrate', 'integrated', 'integration', 'migrate', 'migrated', 'migration',
+    'senior', 'junior', 'principal', 'staff', 'lead',
+    'improve', 'improved', 'increase', 'increased', 'reduce', 'reduced',
+    'enhance', 'enhanced', 'solve', 'solved', 'fix', 'fixed'
+}
 
 job_terms = {
     'developer', 'engineer', 'scientist', 'analyst', 'manager',

@@ -17,7 +17,7 @@ def balance_cv_weights(analysis):
     if all_skills:
         # Repeat skills multiple times for emphasis
         skills_text = " ".join(str(skill) for skill in all_skills)
-        profile_parts.extend([skills_text] * 3)  # Triple weight for skills
+        profile_parts.extend([skills_text] * 2)  # Double weight for skills
     
     # 2. CV sections (experience, projects, education)
     sections = analysis.get('sections', {})
@@ -25,12 +25,12 @@ def balance_cv_weights(analysis):
     # Experience section (high weight)
     experience_text = sections.get('experience', '')
     if experience_text:
-        profile_parts.extend([experience_text] * 2)  # Double weight
+        profile_parts.extend([experience_text]) 
     
     # Projects section (high weight)
     projects_text = sections.get('projects', '')
     if projects_text:
-        profile_parts.extend([projects_text] * 2)  # Double weight
+        profile_parts.extend([projects_text])  
     
     # Education section (normal weight)
     education_text = sections.get('education', '')

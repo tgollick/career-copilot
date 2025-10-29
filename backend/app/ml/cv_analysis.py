@@ -10,6 +10,7 @@ class CVAnalyser:
         # Load the base model
         try:
             self.nlp = spacy.load("en_core_web_sm")
+            self.all_technical_skills = []
         except OSError:
             raise SpacyModelError(
                 "spaCy English model not found. Install with: "
@@ -52,9 +53,18 @@ class CVAnalyser:
         
         # Enhanced skill extraction
         results['skills'] = self._extract_skills_comprehensive(text)
+
+        self.all_technical_skills = [
+            skill.lower() 
+            for skill_category in results['skills'].values()  
+            for skill in skill_category  
+        ]
         
-        # Improved entity extraction with filtering
-        results['entities'] = self._extract_entities_filtered(doc, text)
+        # Improved entity recognition with context provided for better extraction
+        results['entities'] = self._extract_entities_with_context(
+                doc,
+                results['sections'],
+                )
         
         # Extract experience indicators
         results['experience_indicators'] = self._extract_experience_indicators(text)
@@ -148,7 +158,7 @@ class CVAnalyser:
 
         # Return the skills
         return skills
-
+    
     def _find_skills_in_text(self, text: str, skill_set: set) -> List[str]:
         # Initialise the found skills variable to store the skills
         found_skills = []
@@ -175,59 +185,138 @@ class CVAnalyser:
         # Return the found skills
         return found_skills
 
-    def _extract_entities_filtered(self, doc, text: str) -> Dict[str, List[str]]:
-        # Initialise the entities variable to store the entities
-        # Compared to the previous iteration we are looking to filter out any of the skills, education, work experience that we have handled ourselves
-        # This is to avoid duplicate information and hopefully reduce the amount of false positives for information
+    def _extract_entities_with_context(self, full_doc, sections: Dict[str, str]) -> Dict[str, List[str]]:
         entities = {
             'names': [],
-            'organizations': [],
+            'organisations': [],
             'dates': [],
-            'locations': []
+            'locations': [],
         }
 
-        # Creating a master variable to store all the skills to filter out
-        skill_words = set()
+        # Focusing on organisations from experience section (most likely previous or current employers)
+        experience_text = sections.get('experience', '')
 
-        # Adding previous skills to the master variable
-        for skill_set in [programming_languages, frameworks_libraries, databases, cloud_tools]:
-            skill_words.update(skill_set)
+        if experience_text:
+            exp_doc = self.nlp(experience_text)
 
-        # Looping through the entities and checking if they are in the master variable
-        for ent in doc.ents:
-            entity_text = ent.text.strip()
-            entity_lower = entity_text.lower()
+            for ent in exp_doc.ents:
+                if ent.label_ == 'ORG':
+                    entity_text = ent.text.strip()
 
-            # If the entity is in the master variable, skip it
-            if entity_lower in skill_words:
-                continue
+                    if self._is_valid_employer(entity_text, experience_text):
+                        entities['organisations'].append(entity_text)
 
-            # CV words that from previous iterations are missclassified as entities
-            cv_words = {'cv', 'resume', 'portfolio', 'skills', 'experience', 'education'}
-            
-            # If the entity is a CV word, skip it
-            if entity_lower in cv_words:
-                continue
+        
+        # Focusing on organsations from education (most likely universities, schools etc)
+        education_text = sections.get('education', '')
 
-            # If the entity is a person and the length is greater than 2, add it to the names array
-            if ent.label_ == 'PERSON' and len(entity_text) > 2:
-                entities['names'].append(entity_text)
-            # If the entity is an organization and the length is greater than 1, add it to the organizations array    
-            elif ent.label_ == 'ORG' and len(entity_text) > 1:
-                entities['organizations'].append(entity_text)
-            # If the entity is a date, add it to the dates array
-            elif ent.label_ == 'DATE':
-                entities['dates'].append(entity_text)
-            # If the entity is a location, add it to the locations array
-            elif ent.label_ in ['GPE', 'LOC']:
-                entities['locations'].append(entity_text)
+        if education_text:
+            edu_doc = self.nlp(education_text)
 
-        # Remove duplicates from the entities
+            for ent in edu_doc.ents:
+                if ent.label_ == 'ORG':
+                    entity_text = ent.text.strip()
+
+                    if self._is_valid_school(entity_text, education_text):
+                        entities['organisations'].append(entity_text)
+
+        for ent in full_doc.ents:
+            if ent.label_ in ['GPE', 'LOC', 'DATE']:
+                entity_text = ent.text.strip()
+
+                if ent.label_ in ['GPE', 'LOC']:
+                    if entity_text.lower() not in self.all_technical_skills:
+                        if len(entity_text) > 2 and not entity_text.endswith('.js'):
+                            entities['locations'].append(entity_text)
+                else:
+                    if '-' in entity_text or len(entity_text) > 4:
+                        entities['dates'].append(entity_text)
+
         for key in entities:
-            entities[key] = list(set(entities[key]))
+            entities[key] = list(dict.fromkeys(entities[key]))
 
-        # Return the entities
         return entities
+
+    def _is_valid_employer(self, org_name: str, experience_context: str) -> bool:
+        
+        org_lower = org_name.lower()
+        context_lower = experience_context.lower()
+
+        # Reject obvious false positives
+        if org_name.startswith('•') or org_name.startswith('-'):
+            return False
+        
+        if len(org_name) < 3:
+            return False
+        
+        # Reject if it's actually a skill or technology
+        if org_lower in self.all_technical_skills:
+            return False
+        
+        # Reject common section headers or formatting artifacts
+        if org_lower in ['experience', 'work history', 'employment', 'career']:
+            return False
+
+        # Positive signals that its actually an employer
+        # Trying to see if the name is surrounded by employment indicator terms
+        org_position = context_lower.find(org_lower)
+
+        if org_position != -1:
+            context_window = context_lower[max(0, org_position-200): min(len(context_lower), org_position+200)]
+
+            employer_indications = [
+                'worked at', 'working at', 'employed by', 'position at',
+                'role at', 'joined', 'company', 'organisation', 'firm', 'employer',
+                'client'
+            ]
+
+            if any(indicator in context_window for indicator in employer_indications):
+                return True 
+
+        company_patterns = [
+            r'\b(ltd|limited|inc|incorporated|corp|corporation|llc|plc)\b',
+            r'\b(group|holdings|partners|associates|solutions)\b'
+        ]
+        
+        for pattern in company_patterns:
+            if re.search(pattern, org_lower):
+                return True
+
+        return True
+
+    def _is_valid_school(self, org_name: str, education_context: str):
+
+        org_lower = org_name.lower()
+        context_lower = education_context.lower()
+
+        if org_name.startswith('•') or len(org_name) < 3:
+            return False
+        
+        if org_lower in self.all_technical_skills:
+            return False
+
+        education_keywords = [
+            'university', 'college', 'school', 'academy', 'institute',
+            'polytechnic', 'metropolitan', 'high'
+        ]
+
+        if any(keyword in org_lower for keyword in education_keywords):
+            return True
+
+        org_position = context_lower.find(org_lower)
+
+        if org_position != -1:
+            context_window = context_lower[max(0, org_position-150): min(len(context_lower), org_position+150)]
+
+            degree_indicators = [
+                'bsc', 'msc', 'ba', 'ma', 'phd', 'bachelor', 'hons', 'master',
+                'degree', 'diploma', 'gcse', 'a-level', 'qualification'
+            ]
+
+            if any(indicator in context_window for indicator in degree_indicators):
+                return True
+
+        return False
 
     def _extract_experience_indicators(self, text: str) -> List[str]:
         # Extract phrases that indicate work experience

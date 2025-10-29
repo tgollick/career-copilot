@@ -154,6 +154,7 @@ import tempfile
 import os
 from pydantic import BaseModel
 from typing import Dict, List
+import json
 
 from ml.balance_cv_weight import balance_cv_weights
 from ml.tfidf import TFIDFFromScratch 
@@ -260,6 +261,9 @@ async def analyze_cv(file: UploadFile = File(...)):
             
             # Analyze CV
             analysis_results = cv_analyser.analyse_cv_test(cv_text)
+
+            with open('analysis_results.json', 'w') as f:
+                json.dump(analysis_results, f, indent=4)
             
             return JSONResponse(
                 status_code=200,

@@ -2,7 +2,7 @@ import numpy as np
 import math 
 from collections import Counter
 import re
-from .config import job_terms, all_technical_skills
+from .config import job_terms, all_technical_skills, experience_indicators
 from .exceptions import TFIDFCalculationError, InsufficientDataError
 
 class TFIDFFromScratch:
@@ -52,12 +52,11 @@ class TFIDFFromScratch:
         filtered_words = []
         for word in normalised_words:
             if word in all_technical_skills:
-                # Technical skills get double weight for emphasis
-                filtered_words.extend([word] * 2)
-            elif word in job_terms:
-                # Job terms get normal weight
+                filtered_words.append(word * 3)
+            elif word in experience_indicators:
+                filtered_words.append(word * 2)
+            if word in job_terms:
                 filtered_words.append(word)
-            # Stop words are ignored entirely
         
         return filtered_words
 
