@@ -1,7 +1,7 @@
 import spacy
 import re
 from typing import Dict, List
-from .config import programming_languages, frameworks_libraries, databases, cloud_tools
+from .config import programming_languages, frameworks_libraries, databases, cloud_tools, experience_indicators
 from .patterns import section_patterns, contact_patterns, experience_patterns, education_patterns
 from .exceptions import SpacyModelError
 
@@ -327,6 +327,12 @@ class CVAnalyser:
         for pattern in experience_patterns:
             matches = re.findall(pattern, text, re.IGNORECASE)
             indicators.extend(matches)
+
+        words = text.split(" ")
+
+        for w in words:
+            if w in experience_indicators:
+                indicators.append(w)
         
         # Return the experience indicators
         return indicators

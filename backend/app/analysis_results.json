@@ -14,42 +14,42 @@
     },
     "skills": {
         "programming_languages": [
+            "Java",
+            "Typescript",
+            "C",
+            "Visual Basic",
             "Lua",
             "Sql",
-            "Css",
-            "C",
-            "GO",
-            "Typescript",
-            "Java",
-            "Visual Basic",
+            "Javascript",
             "Python",
-            "Javascript"
+            "Css",
+            "GO"
         ],
         "frameworks_libraries": [
-            "Tailwind",
-            "Pandas",
-            "React",
-            "Node",
-            "Node.Js",
-            "Solid",
-            "Redux",
-            "Numpy",
             ".Net",
-            "Next",
             "Next.Js",
-            "Scikit-Learn",
             "Less",
-            "Scikit"
+            "Numpy",
+            "Solid",
+            "Node.Js",
+            "Node",
+            "Next",
+            "Scikit-Learn",
+            "Tailwind",
+            "Scikit",
+            "Redux",
+            "Pandas",
+            "React"
         ],
         "databases": [
             "Mongo",
             "Mongodb"
         ],
         "cloud_tools": [
-            "Git",
-            "Vercel",
             "Rds",
-            "Github"
+            "Vercel",
+            "Github",
+            "Git"
         ],
         "other_skills": []
     },
@@ -72,7 +72,14 @@
             "NoSQL"
         ]
     },
-    "experience_indicators": [],
+    "experience_indicators": [
+        "leadership",
+        "leading",
+        "management",
+        "creating",
+        "create",
+        "created"
+    ],
     "education_info": [
         "BSc",
         "University",
