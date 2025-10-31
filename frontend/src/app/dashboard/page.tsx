@@ -2,12 +2,26 @@ import HeroStats from "@/components/dashboard/HeroStats"
 import JobInformation from "@/components/dashboard/JobInformation"
 import MatchQualityDistro from "@/components/dashboard/MatchQualityDistro"
 import ProfileTile from "@/components/dashboard/ProfileTile"
+import { getStats, getTopMatches, getRecentJobs, getMatchDistribution, getUserInfo } from "@/lib/dashboard/helper"
+import { auth } from "@clerk/nextjs/server"
 
 import {
   Target,
 } from "lucide-react"
 
-export default function DashboardPage() {
+export default async function DashboardPage() {
+  const { userId } = await auth()
+
+  if(!userId) return;
+
+  const [statistics, recentJobs, bestJobs, distribution, profile] = await Promise.all([
+    getStats(userId),
+    getRecentJobs(),
+    getTopMatches(userId),
+    getMatchDistribution(userId),
+    getUserInfo(userId,)
+  ])
+
   return (
     <div className="relative min-h-screen bg-background">
       {/* Fixed gradient background */}
@@ -28,22 +42,21 @@ export default function DashboardPage() {
         </div>
 
         {/* Hero stats for jobs, cv analysis, average similarity score etc. */}
-        <HeroStats />
+        <HeroStats statistics={statistics}/>
 
         <div className="grid lg:grid-cols-3 gap-6 sm:gap-8">
           {/* Main Content */}
           <div className="lg:col-span-2 space-y-6 sm:space-y-8">
             {/* Job Information (best matches, new posted jobs)*/}
-            <JobInformation />
+            <JobInformation bestMatchedJobs={bestJobs} newestJobs={recentJobs}/>
           </div>
-
           {/* Sidebar */}
           <div className="space-y-6 sm:space-y-8">
             {/* Profile Summary */}
-            <ProfileTile />
+            <ProfileTile profile={profile}/>
 
             {/* Match Quality Distribution */}
-            <MatchQualityDistro />
+            <MatchQualityDistro distro={distribution} />
           </div>
         </div>
       </div>

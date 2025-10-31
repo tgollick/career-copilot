@@ -282,3 +282,14 @@ export type JobsApiResponse = {
     hasPreviousPage: boolean;
   };
 };
+
+export type NewestJobs = Job & {
+  company: Company;
+};
+
+export type BestJobs = JobSimilarities & {
+  job: Job & {
+    company: Company
+  }
+}
+

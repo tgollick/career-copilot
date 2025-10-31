@@ -4,6 +4,7 @@ import Header from "@/components/layout/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import Footer from "@/components/layout/Footer";
 import { Figtree } from "next/font/google"
+import { Toaster } from "sonner";
 
 const figtree = Figtree({
   weight: ["400", "700", "900"],
@@ -74,6 +75,7 @@ export default function RootLayout({
           <Header />
           {children}
           <Footer />
+          <Toaster position="top-right" richColors />
         </body>
       </html>
     </ClerkProvider>
