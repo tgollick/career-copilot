@@ -5,6 +5,7 @@ import { useEffect, useState } from "react"
 import { Badge } from "../ui/badge"
 import { Button } from "../ui/button"
 import Link from "next/link"
+import { useUser } from "@clerk/nextjs"
 
 type Profile = {
   fullName: string
@@ -15,9 +16,12 @@ type Profile = {
 type Props = {}
 
 const ProfileTile = (props: Props) => {
+  const { user } = useUser()
+
   const [userInfo, setUserInfo] = useState<Profile | null>(null)
   const [error, setError] = useState<null | string>(null)
   const [loading, setLoading] = useState<boolean>(true)
+  const [userImageUrl, setUserImageUrl] = useState<string | null>(null)
 
   const getUserInfo = async () => {
     setLoading(true)
@@ -46,6 +50,13 @@ const ProfileTile = (props: Props) => {
   useEffect(() => {
     getUserInfo()
   }, [])
+
+  useEffect(() => {
+    if(!user) return;
+    if(!user.hasImage) return;
+
+    setUserImageUrl(user.imageUrl)
+  }, [user])
 
   if (loading) {
     return (
@@ -104,8 +115,15 @@ const ProfileTile = (props: Props) => {
   return (
     <div className="bg-card border border-border rounded-xl sm:rounded-2xl p-6 sm:p-8">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-12 h-12 rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
-          {userInfo.fullName.charAt(0)}
+        <div className="w-12 h-12 overflow-hidden rounded-xl bg-gradient-to-br from-primary to-accent flex items-center justify-center text-white font-bold text-lg">
+          {userImageUrl != null ? (
+            <img
+              src={userImageUrl}
+              alt={`${userInfo.fullName} profile photo`}
+            />
+          ) : (
+            <span>{userInfo.fullName.charAt(0)}</span>
+          )}
         </div>
         <div>
           <h2 className="text-lg sm:text-xl font-bold">{userInfo.fullName}</h2>

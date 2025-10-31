@@ -1,19 +1,14 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import Header from "@/components/layout/Header";
 import { ClerkProvider } from "@clerk/nextjs";
 import Footer from "@/components/layout/Footer";
+import { Figtree } from "next/font/google"
 
-const geistSans = Geist({
-  variable: "--font-geist-sans",
+const figtree = Figtree({
+  weight: ["400", "700", "900"],
   subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+})
 
 export const metadata: Metadata = {
   title: "Career Co-Pilot - AI-Powered Job Matching Platform",
@@ -74,7 +69,7 @@ export default function RootLayout({
     <ClerkProvider>
       <html lang="en" className="dark">
         <body
-          className={`font-sans antialiased`}
+          className={`${figtree.className} antialiased`}
         >
           <Header />
           {children}

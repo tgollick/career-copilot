@@ -38,7 +38,7 @@ export async function GET(req: NextRequest) {
     
     const fullName = userInfo.firstName + " " + userInfo.lastName
     const email = userInfo.email;
-    const topSkills = currentCvAnalysis.programmingLanguages?.slice(0, 5)
+    const topSkills = currentCvAnalysis.programmingLanguages
 
     return NextResponse.json({
       success: true,

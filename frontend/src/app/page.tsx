@@ -15,8 +15,12 @@ import {
   FileCheck,
   Mail,
 } from "lucide-react"
+import { auth } from "@clerk/nextjs/server";
 
-export default function LandingPage() {
+export default async function LandingPage() {
+  const { userId } = await auth();
+  const isLoggedIn = !userId ? false : true
+
   return (
     <div className="relative min-h-screen bg-background">
       <div className="fixed inset-0 bg-gradient-to-br from-primary/10 via-transparent to-accent/10 pointer-events-none -z-10" />
@@ -24,35 +28,23 @@ export default function LandingPage() {
       {/* Hero Section */}
       <section className="relative px-4 sm:px-6 pt-24 sm:pt-32 pb-16 sm:pb-20">
         <div className="max-w-6xl mx-auto text-center">
-          {/* Badge */}
-          <Badge
-            variant="outline"
-            className="mb-6 px-3 sm:px-4 py-1.5 sm:py-2 text-xs sm:text-sm border-primary/30 bg-primary/5"
-          >
-            <Sparkles className="w-3 h-3 sm:w-4 sm:h-4 mr-2 text-primary" />
-            AI-Powered Job Matching Platform
-          </Badge>
-
           {/* Main Headline */}
           <h1 className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold mb-4 sm:mb-6 bg-gradient-to-br from-foreground via-foreground to-muted-foreground bg-clip-text text-transparent leading-tight px-4">
             Career Co-Pilot
           </h1>
 
           <p className="text-base sm:text-lg md:text-xl lg:text-2xl text-muted-foreground mb-3 sm:mb-4 max-w-3xl mx-auto leading-relaxed px-4">
-            Full-stack AI platform showcasing custom machine learning algorithms for intelligent CV analysis and job
-            matching
           </p>
 
-          <p className="text-sm sm:text-base md:text-lg text-muted-foreground/80 mb-8 sm:mb-10 max-w-2xl mx-auto px-4">
-            Built from scratch to demonstrate deep understanding of ML fundamentals, full-stack development, and modern
-            cloud architecture
+          <p className="text-base sm:text-lg md:text-xl text-muted-foreground max-w-2xl mx-auto pb-12">
+            A full-stack ML/AI passion project to deepen my understanding of core ML and NLP concepts while combining my experience in frontend and backend development.
           </p>
 
           {/* CTA Buttons */}
           <div className="flex flex-col sm:flex-row gap-3 sm:gap-4 justify-center items-center px-4">
             <Button asChild size="lg" className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 group">
               <Link href="/jobs">
-                Explore Job Matches
+                Explore Jobs 
                 <ArrowRight className="ml-2 w-4 h-4 sm:w-5 sm:h-5 group-hover:translate-x-1 transition-transform" />
               </Link>
             </Button>
@@ -64,28 +56,6 @@ export default function LandingPage() {
             >
               <Link href="/sign-up">Get Started</Link>
             </Button>
-          </div>
-        </div>
-      </section>
-
-      {/* Tech Highlights */}
-      <section className="px-4 sm:px-6 py-12 sm:py-16">
-        <div className="max-w-6xl mx-auto">
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
-            {[
-              { label: "Custom ML Algorithm", icon: Brain },
-              { label: "NLP with spaCy", icon: Sparkles },
-              { label: "Next.js 15 + FastAPI", icon: Code2 },
-              { label: "PostgreSQL + AWS", icon: Database },
-            ].map((tech, i) => (
-              <div
-                key={i}
-                className="bg-card border border-border rounded-lg sm:rounded-xl p-4 sm:p-6 text-center hover:border-primary/50 transition-all hover:shadow-lg hover:shadow-primary/5"
-              >
-                <tech.icon className="w-6 h-6 sm:w-8 sm:h-8 mx-auto mb-2 sm:mb-3 text-primary" />
-                <p className="text-xs sm:text-sm font-medium text-foreground leading-tight">{tech.label}</p>
-              </div>
-            ))}
           </div>
         </div>
       </section>
@@ -288,7 +258,13 @@ export default function LandingPage() {
                 variant="outline"
                 className="w-full sm:w-auto text-base sm:text-lg px-6 sm:px-8 py-5 sm:py-6 border-primary/30 hover:bg-primary/5 bg-transparent"
               >
-                <Link href="/sign-up">Create Account</Link>
+                <Link href={isLoggedIn ? "/dashboard" : "/sign-up"}>
+                  {isLoggedIn ? (
+                    "To Dashboard"
+                  ) : (
+                    "Sign In/Up"
+                  )}
+                </Link>
               </Button>
             </div>
           </div>

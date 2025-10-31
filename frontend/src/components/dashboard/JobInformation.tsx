@@ -26,11 +26,35 @@ type MatchedJob = {
   postedDate: string
 }
 
-const getMatchQualityColor = (quality: number) => {
-  if (quality >= 85) return "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
-  if (quality >= 70) return "bg-blue-500/10 text-blue-400 border-blue-500/30"
-  if (quality >= 55) return "bg-amber-500/10 text-amber-400 border-amber-500/30"
-  return "bg-slate-500/10 text-slate-400 border-slate-500/30"
+const daysAgo = (dateString: string): number => {
+  const [day, month, year] = dateString.split("/").map(Number)
+
+  const postDate = new Date(year, month - 1, day);
+  const today = new Date();
+
+  const diffMs = today.getTime() - postDate.getTime()
+  const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24))
+
+  return diffDays
+}
+
+const getMatchStyles = (matchQuality: string | null) => {
+  switch (matchQuality) {
+    case "Excellent Match":
+      return "bg-emerald-500/15 text-emerald-400 border-emerald-500/30 shadow-emerald-500/10"
+    case "Strong Match":
+      return "bg-blue-500/15 text-blue-400 border-blue-500/30 shadow-blue-500/10"
+    case "Good Match":
+      return "bg-violet-500/15 text-violet-400 border-violet-500/30 shadow-violet-500/10"
+    case "Moderate Match":
+      return "bg-amber-500/15 text-amber-400 border-amber-500/30 shadow-amber-500/10"
+    case "Weak Match":
+      return "bg-orange-500/15 text-orange-400 border-orange-500/30 shadow-orange-500/10"
+    case "No Match":
+      return "bg-red-500/15 text-red-400 border-red-500/30 shadow-red-500/10"
+    default:
+      return "bg-muted text-muted-foreground border-border"
+  }
 }
 
 type Props = {}
@@ -40,6 +64,7 @@ const JobInformation = (props: Props) => {
   const [bestMatchedJobs, setBestMatchedJobs] = useState<MatchedJob[] | null>(null)
   const [error, setError] = useState<string | null>(null)
   const [loading, setLoading] = useState<boolean>(true)
+
 
   const getJobs = async () => {
     setLoading(true)
@@ -160,7 +185,7 @@ const JobInformation = (props: Props) => {
                       <h3 className="text-lg sm:text-xl font-semibold group-hover:text-primary transition-colors">
                         {job.title}
                       </h3>
-                      <Badge className={`${getMatchQualityColor(job.matchQuality)} border font-semibold shrink-0`}>
+                      <Badge className={`${getMatchStyles(job.matchLabel)} border font-semibold shrink-0`}>
                         {job.matchQuality}%
                       </Badge>
                     </div>
@@ -195,7 +220,7 @@ const JobInformation = (props: Props) => {
             ))
           ) : (
             <div className="text-center py-8 text-muted-foreground">
-              No matched jobs found. Upload your CV to get started!
+              No job matches found! Head to <span className="font-bold">PROFILE</span> to generate similarities.
             </div>
           )}
         </div>
@@ -239,7 +264,13 @@ const JobInformation = (props: Props) => {
                     {job.title}
                   </h3>
                   <Badge variant="secondary" className="text-xs shrink-0">
-                    {job.postedDate}
+                    {`Posted ${
+                      daysAgo(job.postedDate) === 0
+                        ? "today"
+                        : daysAgo(job.postedDate) === 1
+                        ? "1 day ago"
+                        : `${daysAgo(job.postedDate)} days ago`
+                    }`}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground mb-2">{job.company}</p>
